@@ -1,4 +1,3 @@
-// src/App.jsx
 import React from 'react';
 import {
   BrowserRouter as Router,
@@ -12,7 +11,6 @@ import UserRegisterPage from './pages/Auth/UserRegisterPage';
 import ClinicRegisterPage from './pages/Auth/ClinicRegisterPage';
 import { useAuth } from './contexts/AuthContext';
 
-// Dummy Home pages – replace with your actual components.
 const UserHome = () => <div>User Home Page</div>;
 const ClinicHome = () => <div>Clinic Home Page</div>;
 const DoctorHome = () => <div>Doctor Home Page</div>;
@@ -30,7 +28,6 @@ function RequireAuth({ allowedRoles }) {
     return <Navigate to="/" replace />;
   }
   if (!allowedRoles.includes(auth.user.role)) {
-    // Redirect to user's home page based on role.
     return <Navigate to={`/${auth.user.role.toLowerCase()}/home`} replace />;
   }
   return <Outlet />;
@@ -42,7 +39,6 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* Public Route: If logged in, redirect based on role; otherwise, show LoginPage */}
         <Route
           path="/"
           element={
@@ -66,7 +62,6 @@ function App() {
           <Route path="/doctor/home" element={<DoctorHome />} />
         </Route>
 
-        {/* Catch-all: redirect unknown paths to login */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
