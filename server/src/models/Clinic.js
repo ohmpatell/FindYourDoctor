@@ -5,11 +5,22 @@ const ClinicSchema = new mongoose.Schema({
     type: String, 
     required: true 
   },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    lowercase: true,
+    trim: true
+  },
+  password: { 
+    type: String, 
+    required: true 
+  },
   address: { 
     type: String, 
     required: true 
   },
-  phone: { 
+  phoneNumber: { 
     type: String 
   },
   profileImage: {
@@ -33,6 +44,12 @@ const ClinicSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Appointment'
   }],
+  role: {
+    type: String,
+    enum: ['USER', 'DOCTOR', 'CLINIC'],
+    default: 'USER',
+    required: true
+  },
   createdAt: { 
     type: Date, 
     default: Date.now 

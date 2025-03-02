@@ -30,6 +30,12 @@ const UserSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Appointment'
   }],
+  role: {
+    type: String,
+    enum: ['USER', 'DOCTOR', 'CLINIC'],
+    default: 'USER',
+    required: true
+  },
   createdAt: { 
     type: Date, 
     default: Date.now 

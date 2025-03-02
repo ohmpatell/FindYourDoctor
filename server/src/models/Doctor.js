@@ -41,6 +41,12 @@ const DoctorSchema = new mongoose.Schema({
   bio: {
     type: String
   },
+  role: {
+    type: String,
+    enum: ['USER', 'DOCTOR', 'CLINIC'],
+    default: 'USER',
+    required: true
+  },
   createdAt: { 
     type: Date, 
     default: Date.now 
