@@ -79,18 +79,21 @@ function UserRegisterPage() {
   const handleNext = async () => {
     if (!validateStep()) return;
     if (activeStep === steps.length - 1) {
+      let updatedFormData = { ...formData };
       if (image) {
         const uploadResult = await uploadImage(image);
-        setFormData(prev => ({ ...prev, pfpUrl: uploadResult.secure_url }));
+        console.log("result", uploadResult);
+        updatedFormData = { ...updatedFormData, pfpUrl: uploadResult };
       }
       try {
+        console.log("formdata", updatedFormData);
         await registerUser(
-          formData.firstName,
-          formData.lastName,
-          formData.email,
-          formData.password,
-          formData.phoneNumber,
-          formData.pfpUrl
+          updatedFormData.firstName,
+          updatedFormData.lastName,
+          updatedFormData.email,
+          updatedFormData.password,
+          updatedFormData.phoneNumber,
+          updatedFormData.pfpUrl
         );
         navigate('/user/home');
       } catch (err) {

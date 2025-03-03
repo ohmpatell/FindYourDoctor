@@ -1,4 +1,3 @@
-// src/pages/ClinicRegisterPage.jsx
 import React, { useState, useRef } from 'react';
 import {
   Container,
@@ -20,6 +19,7 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { uploadImage } from '../../services/cloudinary';
 
 const steps = ['Basic Info', 'Other Info', 'Privacy'];
 
@@ -28,12 +28,14 @@ function ClinicRegisterPage() {
   const { registerClinic } = useAuth();
   const [activeStep, setActiveStep] = useState(0);
   const [logo, setLogo] = useState(null);
+  const [uploadLogo, setUploadLogo] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
     phoneNumber: '',
-    address: ''
+    address: '',
+    profileImage: ''
   });
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [errors, setErrors] = useState({});
@@ -47,6 +49,7 @@ function ClinicRegisterPage() {
     const file = e.target.files[0];
     if(file) {
       setLogo(URL.createObjectURL(file));
+      setUploadLogo(file);
     }
   };
 
@@ -75,13 +78,20 @@ function ClinicRegisterPage() {
   const handleNext = async () => {
     if(!validateStep()) return;
     if(activeStep === steps.length - 1) {
+
+      let updatedFormData = { ...formData };
+      if(uploadLogo) {
+        const uploadResult = await uploadImage(uploadLogo);
+        updatedFormData = { ...formData, profileImage: uploadResult };
+      }
       try {
         await registerClinic(
-          formData.name,
-          formData.email,
-          formData.password,
-          formData.phoneNumber,
-          formData.address
+          updatedFormData.name,
+          updatedFormData.email,
+          updatedFormData.password,
+          updatedFormData.phoneNumber,
+          updatedFormData.address,
+          updatedFormData.profileImage
         );
         navigate('/clinic/home');
       } catch(err) {

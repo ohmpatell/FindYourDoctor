@@ -53,8 +53,8 @@ export const AuthProvider = ({ children }) => {
         setAuth({ isAuthenticated: false, user: null });
     };
 
-    const registerUser = async (firstName, lastName, email, password, phoneNumber) => {
-        const response = await api.post('/auth/register/user', { firstName, lastName, email, password, phoneNumber });
+    const registerUser = async (firstName, lastName, email, password, phoneNumber, profileImage) => {
+        const response = await api.post('/auth/register/user', { firstName, lastName, email, password, phoneNumber, profileImage });
         const { user, token } = response.data;
         localStorage
             ? localStorage.setItem('userInfo', JSON.stringify({ user, token }))
@@ -64,8 +64,8 @@ export const AuthProvider = ({ children }) => {
         return response.data;
     };
 
-    const registerClinic = async (name, email, password, phoneNumber, address) => {
-        const response = await api.post('/auth/register/clinic', { name, email, password, phoneNumber, address });
+    const registerClinic = async (name, email, password, phoneNumber, address, profileImage) => {
+        const response = await api.post('/auth/register/clinic', { name, email, password, phoneNumber, address, profileImage });
         const { user, token } = response.data;
         localStorage
             ? localStorage.setItem('userInfo', JSON.stringify({ user, token }))
@@ -75,10 +75,8 @@ export const AuthProvider = ({ children }) => {
         return response.data;
     };
     
-    const registerDoctor = async (firstName, lastName, email, password, phoneNumber, specialty, clinicId) => {
-        const response = await api.post('/auth/register/doctor', { firstName, lastName, email, password, phoneNumber, specialty, clinicId });
-        const { user } = response.data;
-        
+    const registerDoctor = async (firstName, lastName, email, password, phoneNumber, specialization, clinicId, profileImage) => {
+        const response = await api.post('/auth/register/doctor', { firstName, lastName, email, password, phoneNumber, specialization, clinicId, profileImage });
         return response.data;
     };
     
