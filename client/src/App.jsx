@@ -10,7 +10,11 @@ import { useAuth } from './contexts/AuthContext';
 function App() {
   const { auth } = useAuth();
 
+<<<<<<< Updated upstream
   const UserHome = () => <div>User Home</div>;
+=======
+  const UserHome = () => <div>Test 2</div>;
+>>>>>>> Stashed changes
   const ClinicHome = () => <div>Clinic Home</div>;
   const DoctorHome = () => <div>Doctor Home</div>;
 
