@@ -6,15 +6,12 @@ import ClinicRegisterPage from './pages/Auth/ClinicRegisterPage';
 import DoctorRegisterPage from './pages/Auth/DoctorRegisterPage';
 import Navbar from './components/Navbar';
 import { useAuth } from './contexts/AuthContext';
+import SearchDoctor from './pages/SearchDoctor';
 
 function App() {
   const { auth } = useAuth();
 
-<<<<<<< Updated upstream
   const UserHome = () => <div>User Home</div>;
-=======
-  const UserHome = () => <div>Test 2</div>;
->>>>>>> Stashed changes
   const ClinicHome = () => <div>Clinic Home</div>;
   const DoctorHome = () => <div>Doctor Home</div>;
 
@@ -32,6 +29,8 @@ function App() {
         />
         <Route path="/register/user" element={<UserRegisterPage />} />
         <Route path="/register/clinic" element={<ClinicRegisterPage />} />
+        <Route path="/search" element={<SearchDoctor />} />
+
 
         {/* Protected Routes */}
         <Route 
