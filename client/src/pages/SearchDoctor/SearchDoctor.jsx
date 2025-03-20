@@ -74,6 +74,10 @@ function DoctorSearchPage() {
     setFilteredDoctors(sorted);
   };
 
+  const handleDoctorDetailClick = (doctorId) => () => {
+    // Add logic to navigate to doctor detail page
+  }
+
   return (
     <div>
       <form onSubmit={handleSearchSubmit} style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
@@ -122,7 +126,7 @@ function DoctorSearchPage() {
                 <Typography variant="h6">{`${doctor.firstName} ${doctor.lastName}`}</Typography>
                 <Typography variant="body2" color="textSecondary">{doctor.specialization}</Typography>
                 <Typography variant="body2" color="textSecondary">{doctor.clinic?.location || 'Location not available'}</Typography>
-                <Button variant="contained" color="primary" style={{ marginTop: '10px' }}>View Information</Button>
+                <Button variant="contained" color="primary" style={{ marginTop: '10px' }} onClick={handleDoctorDetailClick()}>View Information</Button>
                 <Button variant="outlined" color="primary" style={{ marginTop: '10px', marginLeft: '10px' }}>Request Appointment</Button>
                 <IconButton color="primary" style={{ marginTop: '10px' }}>
                   <LocationOnIcon />
