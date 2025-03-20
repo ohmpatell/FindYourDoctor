@@ -66,6 +66,15 @@ function App() {
           } 
         />
 
+<Route 
+          path="/search" 
+          element={
+            auth.isAuthenticated
+              ? (<><Navbar /><SearchDoctorPage /></>)
+              : <Navigate to="/" replace />
+          } 
+        />
+
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
