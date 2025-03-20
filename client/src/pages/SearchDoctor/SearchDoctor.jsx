@@ -16,7 +16,7 @@ function DoctorSearchPage() {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/doctors'); // Replace with your backend URL
+        const response = await axios.get('http://localhost:5000/api/doctors/doctors'); // Replace with your backend URL
         setDoctorsData(response.data);
         setFilteredDoctors(response.data); // Initialize filteredDoctors with all doctors
       } catch (error) {
