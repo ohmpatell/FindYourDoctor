@@ -3,6 +3,7 @@ import { TextField, IconButton, Grid, Card, CardContent, Typography, Button, Sel
 import SearchIcon from '@mui/icons-material/Search';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import axios from 'axios'; // Install axios using `npm install axios`
+import DoctorDetail from '../../components/DoctorDetail';
 
 function DoctorSearchPage() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -11,6 +12,9 @@ function DoctorSearchPage() {
   const [locationFilter, setLocationFilter] = useState('');
   const [specialtyFilter, setSpecialtyFilter] = useState('');
   const [sortCriterion, setSortCriterion] = useState('name');
+
+  const [doctorId, setDoctorId] = useState('');
+  const [showDoctorDetail, setShowDoctorDetail] = useState(false);
 
   // Fetch doctors from the backend
   useEffect(() => {
@@ -75,7 +79,8 @@ function DoctorSearchPage() {
   };
 
   const handleDoctorDetailClick = (doctorId) => () => {
-    // Add logic to navigate to doctor detail page
+    setDoctorId(doctorId);
+    showDoctorDetail(true);
   }
 
   return (
@@ -126,7 +131,7 @@ function DoctorSearchPage() {
                 <Typography variant="h6">{`${doctor.firstName} ${doctor.lastName}`}</Typography>
                 <Typography variant="body2" color="textSecondary">{doctor.specialization}</Typography>
                 <Typography variant="body2" color="textSecondary">{doctor.clinic?.location || 'Location not available'}</Typography>
-                <Button variant="contained" color="primary" style={{ marginTop: '10px' }} onClick={handleDoctorDetailClick()}>View Information</Button>
+                <Button variant="contained" color="primary" style={{ marginTop: '10px' }} onClick={handleDoctorDetailClick(doctor._id)}>View Information</Button>
                 <Button variant="outlined" color="primary" style={{ marginTop: '10px', marginLeft: '10px' }}>Request Appointment</Button>
                 <IconButton color="primary" style={{ marginTop: '10px' }}>
                   <LocationOnIcon />
@@ -136,6 +141,9 @@ function DoctorSearchPage() {
           </Grid>
         ))}
       </Grid>
+
+        {/* To be created */}
+      <DoctorDetail doctorId={doctorId} />
     </div>
   );
 }
