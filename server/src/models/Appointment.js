@@ -19,12 +19,17 @@ const AppointmentSchema = new mongoose.Schema({
     type: Date,
     required: true
   },
+  patientConcerns: {
+    type: String,
+    required: true,
+    default: ''
+  },
   status: {
     type: String,
     enum: ['scheduled', 'completed', 'cancelled'],
     default: 'scheduled'
   },
-  notes: {
+  doctorsNotes: {
     type: String,
     default: ''
   },
