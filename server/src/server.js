@@ -18,12 +18,11 @@ app.get('/', (req, res) => {
 const { PORT } = require('./config/config');
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
-// Import routes
 const authRoutes = require('./routes/auth.routes');
-const doctorRoutes = require('./routes/doctor.routes'); // Import the new doctor routes
+const doctorRoutes = require('./routes/doctor.routes'); 
 const appointmentRoutes = require('./routes/appointment.routes');
 
-// Use routes
 app.use('/api/auth', authRoutes);
+
 app.use('/api/doctors', doctorRoutes);
 app.use('/api/appointment',appointmentRoutes);
