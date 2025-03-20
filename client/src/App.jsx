@@ -6,7 +6,9 @@ import ClinicRegisterPage from './pages/Auth/ClinicRegisterPage';
 import DoctorRegisterPage from './pages/Auth/DoctorRegisterPage';
 import Navbar from './components/Navbar';
 import { useAuth } from './contexts/AuthContext';
-import SearchDoctor from './pages/SearchDoctor';
+
+import SearchDoctorPage from './pages/SearchDoctor/SearchDoctor'; //orlando
+
 
 function App() {
   const { auth } = useAuth();
@@ -29,8 +31,7 @@ function App() {
         />
         <Route path="/register/user" element={<UserRegisterPage />} />
         <Route path="/register/clinic" element={<ClinicRegisterPage />} />
-        <Route path="/search" element={<SearchDoctor />} />
-
+       
 
         {/* Protected Routes */}
         <Route 
@@ -62,6 +63,15 @@ function App() {
           element={
             auth.isAuthenticated && auth.user.role === 'CLINIC'
               ? (<><Navbar /><DoctorRegisterPage /></>)
+              : <Navigate to="/" replace />
+          } 
+        />
+
+<Route 
+          path="/search" 
+          element={
+            auth.isAuthenticated
+              ? (<><Navbar /><SearchDoctorPage /></>)
               : <Navigate to="/" replace />
           } 
         />
