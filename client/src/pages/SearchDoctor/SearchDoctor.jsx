@@ -5,7 +5,7 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import axios from 'axios'; // Install axios using `npm install axios`
 import DoctorDetail from '../../components/DoctorDetail';
 
-function DoctorSearchPage() {
+function SearchDoctorPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [doctorsData, setDoctorsData] = useState([]);
   const [filteredDoctors, setFilteredDoctors] = useState([]);
@@ -20,7 +20,7 @@ function DoctorSearchPage() {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/doctors/doctors'); // Replace with your backend URL
+        const response = await axios.get('http://localhost:5000/api/doctors'); // Replace with your backend URL
         setDoctorsData(response.data);
         setFilteredDoctors(response.data); // Initialize filteredDoctors with all doctors
       } catch (error) {
@@ -58,11 +58,16 @@ function DoctorSearchPage() {
   const filterDoctors = () => {
     const filtered = doctorsData.filter((doctor) =>
       (doctor.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      doctor.specialization.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (doctor.clinic && doctor.clinic.location.toLowerCase().includes(searchQuery.toLowerCase()))
-    ))
+        doctor.lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        doctor.specialization.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (doctor.clinicAddress && doctor.clinicAddress.toLowerCase().includes(searchQuery.toLowerCase()))
+      ) &&
+      (locationFilter === '' || (doctor.clinicAddress && doctor.clinicAddress.toLowerCase().includes(locationFilter.toLowerCase()))) &&
+      (specialtyFilter === '' || doctor.specialization.toLowerCase() === specialtyFilter.toLowerCase())
+    );
     setFilteredDoctors(filtered);
   };
+  
   
 
   const sortDoctors = (criterion) => {
@@ -80,48 +85,90 @@ function DoctorSearchPage() {
 
   const handleDoctorDetailClick = (doctorId) => () => {
     setDoctorId(doctorId);
-    showDoctorDetail(true);
+    setShowDoctorDetail(true);  
   }
 
+
+  const handleClearFilters = () => {
+    setSearchQuery('');
+    setLocationFilter('');
+    setSpecialtyFilter('');
+    setFilteredDoctors(doctorsData); // reset to original list
+  };
+  
+
   return (
-    <div>
-      <form onSubmit={handleSearchSubmit} style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
-        <TextField
-          label="Search Doctors"
-          variant="outlined"
-          value={searchQuery}
-          onChange={handleSearchChange}
-          style={{ marginRight: '10px' }}
-        />
-        <FormControl variant="outlined" style={{ marginRight: '10px', minWidth: 120 }}>
-          <InputLabel>Location</InputLabel>
-          <Select value={locationFilter} onChange={handleLocationFilterChange} label="Location">
-            <MenuItem value=""><em>All</em></MenuItem>
-            <MenuItem value="Toronto, ON">Toronto, ON</MenuItem>
-            <MenuItem value="Mississauga, ON">Mississauga, ON</MenuItem>
-            <MenuItem value="Brampton, ON">Brampton, ON</MenuItem>
-          </Select>
-        </FormControl>
-        <FormControl variant="outlined" style={{ marginRight: '10px', minWidth: 120 }}>
-          <InputLabel>Specialty</InputLabel>
-          <Select value={specialtyFilter} onChange={handleSpecialtyFilterChange} label="Specialty">
-            <MenuItem value=""><em>All</em></MenuItem>
-            <MenuItem value="Cardiology">Cardiology</MenuItem>
-            <MenuItem value="Dermatology">Dermatology</MenuItem>
-            <MenuItem value="Pediatrics">Pediatrics</MenuItem>
-          </Select>
-        </FormControl>
-        <FormControl variant="outlined" style={{ marginRight: '10px', minWidth: 120 }}>
-          <InputLabel>Sort By</InputLabel>
-          <Select value={sortCriterion} onChange={handleSortChange} label="Sort By">
-            <MenuItem value="name">Name (A-Z)</MenuItem>
-            <MenuItem value="availability">Availability</MenuItem>
-          </Select>
-        </FormControl>
-        <IconButton type="submit" color="primary">
-          <SearchIcon />
-        </IconButton>
-      </form>
+    <div style={{ padding: '20px', marginTop: '80px' }}>
+  <form 
+    onSubmit={handleSearchSubmit} 
+    style={{ 
+      display: 'flex', 
+      flexWrap: 'wrap',
+      gap: '12px', 
+      marginBottom: '30px',
+      alignItems: 'center',
+      justifyContent: 'center'
+    }}
+  >
+    <TextField
+      label="Search Doctors"
+      variant="outlined"
+      value={searchQuery}
+      onChange={handleSearchChange}
+      sx={{ width: 250 }}
+    />
+    <FormControl sx={{ minWidth: 160, marginRight: '10px' }}>
+    <InputLabel>Specialty</InputLabel>
+    <Select value={specialtyFilter} onChange={handleSpecialtyFilterChange} label="Specialty">
+      <MenuItem value=""><em>All</em></MenuItem>
+      <MenuItem value="Radiology">Radiology</MenuItem>
+      <MenuItem value="Dermatology">Dermatology</MenuItem>
+      <MenuItem value="Psychiatry">Psychiatry</MenuItem>
+      <MenuItem value="Pediatrics">Pediatrics</MenuItem>
+      <MenuItem value="Cardiology">Cardiology</MenuItem>
+      <MenuItem value="Ophthalmology">Ophthalmology</MenuItem>
+      <MenuItem value="Orthopedics">Orthopedics</MenuItem>
+      <MenuItem value="Neurology">Neurology</MenuItem>
+    </Select>
+  </FormControl>
+  <FormControl sx={{ minWidth: 160, marginRight: '10px' }}>
+    <InputLabel>Location</InputLabel>
+    <Select value={locationFilter} onChange={handleLocationFilterChange} label="Location">
+      <MenuItem value=""><em>All</em></MenuItem>
+      <MenuItem value="Winnipeg">Winnipeg</MenuItem>
+      <MenuItem value="Edmonton">Edmonton</MenuItem>
+      <MenuItem value="Calgary">Calgary</MenuItem>
+      <MenuItem value="Montreal">Montreal</MenuItem>
+      <MenuItem value="Ottawa">Ottawa</MenuItem>
+      <MenuItem value="Vancouver">Vancouver</MenuItem>
+      <MenuItem value="Toronto">Toronto</MenuItem>
+      <MenuItem value="Quebec City">Quebec City</MenuItem>
+      <MenuItem value="Halifax">Halifax</MenuItem>
+      <MenuItem value="Victoria">Victoria</MenuItem>
+    </Select>
+  </FormControl>
+
+    <FormControl sx={{ minWidth: 160 }}>
+      <InputLabel>Sort By</InputLabel>
+      <Select value={sortCriterion} onChange={handleSortChange} label="Sort By">
+        <MenuItem value="name">Name (A-Z)</MenuItem>
+        <MenuItem value="availability">Availability</MenuItem>
+      </Select>
+    </FormControl>
+    <IconButton type="submit" color="primary" sx={{ bgcolor: '#1976d2', color: '#fff', '&:hover': { bgcolor: '#1565c0' } }}>
+      <SearchIcon />
+    </IconButton>
+    <Button 
+      variant="outlined" 
+      color="primary" 
+      onClick={handleClearFilters}
+      style={{ marginLeft: '10px' }}
+    >
+      Clear Filters
+    </Button>
+
+  </form>
+
       <Grid container spacing={2}>
         {filteredDoctors.map((doctor) => (
           <Grid item xs={12} sm={6} md={4} key={doctor._id}>
@@ -143,9 +190,11 @@ function DoctorSearchPage() {
       </Grid>
 
         {/* To be created */}
-      <DoctorDetail doctorId={doctorId} />
+        {showDoctorDetail && (
+  <DoctorDetail doctorId={doctorId} onClose={() => setShowDoctorDetail(false)} />
+)}
     </div>
   );
 }
 
-export default DoctorSearchPage;
+export default SearchDoctorPage;
