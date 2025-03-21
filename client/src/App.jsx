@@ -7,7 +7,7 @@ import DoctorRegisterPage from './pages/Auth/DoctorRegisterPage';
 import Navbar from './components/Navbar';
 import { useAuth } from './contexts/AuthContext';
 
-import SearchDoctorPage from './pages/SearchDoctor/SearchDoctor'; //orlando
+import SearchDoctorPage from './pages/SearchDoctor/SearchDoctor';  //orlando
 
 
 function App() {
@@ -68,13 +68,9 @@ function App() {
         />
 
 <Route 
-          path="/search" 
-          element={
-            auth.isAuthenticated
-              ? (<><Navbar /><SearchDoctorPage /></>)
-              : <Navigate to="/" replace />
-          } 
-        />
+  path="/search" 
+  element={<><Navbar /><SearchDoctorPage /></>} 
+/>
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
