@@ -24,3 +24,6 @@ app.use('/api/auth', authRoutes);
 
 const appointmentRoutes = require('./routes/appointment.routes');
 app.use('/api/appointment',appointmentRoutes);
+
+const clinicRoutes = require('./routes/clinic.routes');
+app.use('/api/clinic', clinicRoutes);
