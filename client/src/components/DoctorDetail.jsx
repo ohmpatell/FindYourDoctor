@@ -21,7 +21,7 @@ const DoctorDetail = ({ doctorId, onClose }) => {
     };
 
     if (doctorId) {
-      fetchDoctor();
+    fetchDoctor();
     }
   }, [doctorId]);
 
@@ -32,24 +32,30 @@ const DoctorDetail = ({ doctorId, onClose }) => {
     <Modal open={Boolean(doctor)} onClose={onClose}>
       <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 500, bgcolor: 'background.paper', p: 4, borderRadius: 2 }}>
         <Card>
-          {doctor?.profileImage && (
-            <CardMedia
-              component="img"
-              height="250"
-              image={doctor.profileImage}
-              alt={`${doctor.firstName} ${doctor.lastName}`}
-            />
+          {doctor && (
+            <> 
+            {doctor?.profileImage && (
+              <CardMedia
+                component="img"
+                height="250"
+                image={doctor.profileImage}
+                alt={`${doctor.firstName} ${doctor.lastName}`}
+              />
+            )}
+            <CardContent>
+              <Typography variant="h5">{doctor.firstName} {doctor.lastName}</Typography>
+              <Typography variant="subtitle1">Specialization: {doctor.specialization}</Typography>
+              <Typography variant="body2">{doctor.bio}</Typography>
+              <Typography variant="body2" sx={{ mt: 1 }}>Credentials: {doctor.credentials}</Typography>
+              <Typography variant="body2" sx={{ mt: 1 }}>Clinic: {doctor.clinic?.name || 'N/A'}</Typography>
+              <Typography variant="body2" sx={{ mt: 1 }}>
+                Address: {doctor.clinic?.address ? `${doctor.clinic.address.street}, ${doctor.clinic.address.city}, ${doctor.clinic.address.province}` : 'N/A'}
+              </Typography>
+              <Button variant="contained" sx={{ mt: 2 }} onClick={onClose}>Close</Button>
+            </CardContent>
+          </>
           )}
-          <CardContent>
-            <Typography variant="h5">{doctor.firstName} {doctor.lastName}</Typography>
-            <Typography variant="subtitle1">Specialization: {doctor.specialization}</Typography>
-            <Typography variant="body2">{doctor.bio}</Typography>
-            <Typography variant="body2" sx={{ mt: 1 }}>Credentials: {doctor.credentials}</Typography>
-            <Typography variant="body2" sx={{ mt: 1 }}>Clinic: {doctor.clinic?.name || 'N/A'}</Typography>
-            <Typography variant="body2" sx={{ mt: 1 }}>Address: {doctor.clinic?.address || doctor.clinicAddress || 'N/A'}</Typography>
-            <Button variant="contained" sx={{ mt: 2 }} onClick={onClose}>Close</Button>
-          </CardContent>
-        </Card>
+          </Card>
       </Box>
     </Modal>
   );
