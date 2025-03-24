@@ -93,15 +93,20 @@ function LoginPage() {
             <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
               Sign In
             </Button>
-            <Grid container>
-              <Grid item xs>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
                 <Link href="/register/clinic" variant="body2">
                   {"Are you a clinic and want to register? Sign Up"}
                 </Link>
               </Grid>
-              <Grid item>
+              <Grid item xs={12}>
                 <Link href="/register/user" variant="body2">
                   {"Don't have an account? Sign Up"}
+                </Link>
+              </Grid>
+              <Grid item xs={12}>
+                <Link href="/search" variant="body2">
+                  {"Want to search for a doctor without logging in? Continue as a Guest"}
                 </Link>
               </Grid>
             </Grid>
