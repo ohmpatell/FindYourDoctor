@@ -1,7 +1,11 @@
 const express = require('express');
-// const {protect} = require('../middlewares/auth.middleware');
-const { createAppointment } = require('../controllers/appointment.controller')
 const router = express.Router();
+const appointmentController = require('../controllers/appointment.controller');
 
-router.post('/create',createAppointment);
+router.post('/', appointmentController.createAppointment);
+router.get('/', appointmentController.getAllAppointments);
+router.get('/:id', appointmentController.getAppointmentById);
+router.put('/:id', appointmentController.editAppointment);
+router.delete('/:id', appointmentController.deleteAppointment);
+
 module.exports = router;

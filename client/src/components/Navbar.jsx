@@ -11,7 +11,6 @@ export default function Navbar() {
   const [mobileAnchorEl, setMobileAnchorEl] = React.useState(null);
   const [userAnchorEl, setUserAnchorEl] = React.useState(null);
 
-  console.log(auth);
   const handleMobileMenuOpen = (event) => {
     setMobileAnchorEl(event.currentTarget);
   };
