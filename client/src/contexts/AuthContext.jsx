@@ -18,12 +18,12 @@ export const AuthProvider = ({ children }) => {
   });
 
   const checkLocalStorageForUser = async () => {
-    const userInfo = localStorage.getItem('userInfo') || sessionStorage.getItem('userInfo');
-    if (userInfo) {
-      const { user, token } = JSON.parse(userInfo);
-      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      setAuth({ isAuthenticated: true, user });
-    }
+    // const userInfo = localStorage.getItem('userInfo') || sessionStorage.getItem('userInfo');
+    // if (userInfo) {
+    //   const { user, token } = JSON.parse(userInfo);4
+    //   api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    //   setAuth({ isAuthenticated: true, user });
+    // }
   }
 
   useEffect(() => {
