@@ -6,9 +6,7 @@ import ClinicRegisterPage from './pages/Auth/ClinicRegisterPage';
 import DoctorRegisterPage from './pages/Auth/DoctorRegisterPage';
 import Navbar from './components/Navbar';
 import { useAuth } from './contexts/AuthContext';
-
-import SearchDoctorPage from './pages/SearchDoctor/SearchDoctor';  //orlando
-
+import SearchDoctor from './pages/SearchDoctor';
 import ClinicDashboardPage from './pages/ClinicDashboardPage';
 import ManageAppointmentsPage from './pages/ManageAppointmentsPage';
 
@@ -70,11 +68,6 @@ function App() {
               : <Navigate to="/" replace />
           }
         />
-
-<Route 
-  path="/search" 
-  element={<><Navbar /><SearchDoctorPage /></>} 
-/>
 
         <Route
           path="/doctor/home"
