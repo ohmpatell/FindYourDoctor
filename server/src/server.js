@@ -21,8 +21,10 @@ app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 const authRoutes = require('./routes/auth.routes');
 const doctorRoutes = require('./routes/doctor.routes'); 
 const appointmentRoutes = require('./routes/appointment.routes');
+const walkInRoutes = require('./routes/walkin.routes');
 
 app.use('/api/auth', authRoutes);
 
 app.use('/api/doctors', doctorRoutes);
 app.use('/api/appointment',appointmentRoutes);
+app.use('/api/walk-ins',walkInRoutes);
