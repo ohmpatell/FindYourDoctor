@@ -100,8 +100,19 @@ const getDoctorAvailability = asyncHandler(async (req, res) => {
   }
 });
 
+const getSpecializations = asyncHandler(async (req, res) => {
+  try{
+    const specializations = await Doctor.distinct('specialization');
+    res.json(specializations);
+  }
+  catch(error){
+    res.status(500).json({error: error.message});
+  }
+})
+
 module.exports = {
   getAllDoctors,
   getDoctorById,
-  getDoctorAvailability
+  getDoctorAvailability,
+  getSpecializations
 };

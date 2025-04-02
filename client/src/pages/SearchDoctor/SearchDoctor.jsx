@@ -12,7 +12,8 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
-  Box
+  Box,
+  Paper
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import DoctorDetail from '../../components/DoctorDetail';
@@ -48,7 +49,7 @@ function SearchDoctorPage() {
     const fetchDoctors = async () => {
       try {
         const response = await api.get('/doctors/'); // Replace with your backend URL
-        console.log(response.data);
+        // console.log(response.data);
         setDoctorsData(response.data);
         setFilteredDoctors(response.data); // Initialize filteredDoctors with all doctors
       } catch (error) {
@@ -59,13 +60,43 @@ function SearchDoctorPage() {
     fetchDoctors();
   }, []);
 
+  const [provinces, setProvinces] = useState([]);
+  useEffect(() => {
+    const fetchProvinces = async() => {
+      try{
+        const response = await api.get('/clinics/provinces');
+        setProvinces(response.data);
+        // console.log(response.data);
+      }
+      catch(error){
+        console.error('Error:',error);
+      }
+    };
+    fetchProvinces();
+  },[]);
+
+  const [specializations, setSpecializations] = useState([]);
+  useEffect(() => {
+    const fetchSpecializations = async() =>{
+      try{
+        const response = await api.get('/doctors/specializations');
+        setSpecializations(response.data);
+        // console.log(specializations);
+      }
+      catch(error){
+        console.error('Error:',error);
+      }
+    };
+    fetchSpecializations();
+  },[]);
+
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
   };
 
   const handleSearchSubmit = (event) => {
     event.preventDefault();
-    filterDoctors();
+    filterDoctors(searchQuery, locationFilter, specialtyFilter);
   };
 
   const handleLocationFilterChange = (event) => {
@@ -85,9 +116,12 @@ function SearchDoctorPage() {
 
   const filterDoctors = () => {
     const filtered = doctorsData.filter((doctor) =>
-      (doctor.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        doctor.specialization.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (doctor.clinic && doctor.clinic.location.toLowerCase().includes(searchQuery.toLowerCase())))
+      (
+        doctor.firstName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      doctor.lastName?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      `${doctor.firstName} ${doctor.lastName}`.toLowerCase().includes(searchQuery.toLowerCase()) // Check full name
+      ) && 
+      (specialtyFilter === '' || doctor.specialization === specialtyFilter) && ((locationFilter === '' || (doctor.clinic.address.city.toLowerCase() === locationFilter.toLowerCase())))
     );
     setFilteredDoctors(filtered);
   };
@@ -149,9 +183,9 @@ function SearchDoctorPage() {
             <MenuItem value="">
               <em>All</em>
             </MenuItem>
-            <MenuItem value="Toronto, ON">Toronto, ON</MenuItem>
-            <MenuItem value="Mississauga, ON">Mississauga, ON</MenuItem>
-            <MenuItem value="Brampton, ON">Brampton, ON</MenuItem>
+            {[...provinces].sort().map((province) => (
+              <MenuItem key={province} value={province}>{province}</MenuItem>
+            ))}
           </Select>
         </FormControl>
         <FormControl variant="outlined" style={{ marginRight: '10px', minWidth: 120 }}>
@@ -164,9 +198,9 @@ function SearchDoctorPage() {
             <MenuItem value="">
               <em>All</em>
             </MenuItem>
-            <MenuItem value="Cardiology">Cardiology</MenuItem>
-            <MenuItem value="Dermatology">Dermatology</MenuItem>
-            <MenuItem value="Pediatrics">Pediatrics</MenuItem>
+            {[...specializations].sort().map((specialization) => (
+              <MenuItem key={specialization} value={specialization}>{specialization}</MenuItem>
+            ))}
           </Select>
         </FormControl>
         <FormControl variant="outlined" style={{ marginRight: '10px', minWidth: 120 }}>
@@ -184,41 +218,51 @@ function SearchDoctorPage() {
           <SearchIcon />
         </IconButton>
       </form>
-      <Grid container spacing={2}>
-        {filteredDoctors.map((doctor) => (
-          <Grid item xs={12} sm={6} md={4} key={doctor._id}>
-            <Card>
-              <CardContent>
-                <img
-                  src={doctor.profileImage || 'https://via.placeholder.com/150'}
-                  alt={doctor.firstName}
-                  style={{ width: '100%', height: 'auto' }}
-                />
-                <Typography variant="h6">{`${doctor.firstName} ${doctor.lastName}`}</Typography>
-                <Typography variant="body2" color="textSecondary">
-                  {doctor.specialization}
-                </Typography>
-                <Box sx={{ mt: 1, display: 'flex', justifyContent: 'space-between' }}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => handleDoctorDetailClick(doctor._id)}
-                  >
-                    View Information
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    onClick={() => handleRequestAppointment(doctor)}
-                  >
-                    Request Appointment
-                  </Button>
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
+
+      {/* Search Results Section */}
+      <Paper elevation={3} style={{ padding: '20px', marginTop: '20px' }}>
+  <Grid container spacing={2}>
+    {filteredDoctors.length > 0 ? (
+      filteredDoctors.map((doctor) => (
+        <Grid item xs={12} sm={6} md={4} key={doctor._id}>
+          <Card>
+            <CardContent>
+              <img
+                src={doctor.profileImage || 'https://via.placeholder.com/150'}
+                alt={doctor.firstName}
+                style={{ width: '100%', height: 'auto' }}
+              />
+              <Typography variant="h6">{`${doctor.firstName} ${doctor.lastName}`}</Typography>
+              <Typography variant="body2" color="textSecondary">
+                {doctor.specialization}
+              </Typography>
+              <Box sx={{ mt: 1, display: 'flex', justifyContent: 'space-between' }}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => handleDoctorDetailClick(doctor._id)}
+                >
+                  View Information
+                </Button>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  onClick={() => handleRequestAppointment(doctor)}
+                >
+                  Request Appointment
+                </Button>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+      ))
+    ) : (
+      <Typography variant="h6" color="textSecondary" align="center" style={{ width: '100%', padding: '20px' }}>
+        No doctors found. Please refine your search.
+      </Typography>
+    )}
+  </Grid>
+</Paper>
 
       {/* Doctor Detail Modal */}
       {openDoctorDetail && (
