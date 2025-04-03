@@ -4,6 +4,7 @@ import LoginPage from './pages/Auth/LoginPage';
 import UserRegisterPage from './pages/Auth/UserRegisterPage';
 import ClinicRegisterPage from './pages/Auth/ClinicRegisterPage';
 import DoctorRegisterPage from './pages/Auth/DoctorRegisterPage';
+import ClinicDashboardPage from './pages/ClinicDashboardPage';
 import Navbar from './components/Navbar';
 import { useAuth } from './contexts/AuthContext';
 
@@ -14,7 +15,7 @@ function App() {
   const { auth } = useAuth();
 
   const UserHome = () => <div>User Home</div>;
-  const ClinicHome = () => <div>Clinic Home</div>;
+  // const ClinicHome = () => <div>Clinic Home</div>;
   const DoctorHome = () => <div>Doctor Home</div>;
 
   return (
@@ -46,7 +47,7 @@ function App() {
           path="/clinic/home" 
           element={
             auth.isAuthenticated && auth.user.role === 'CLINIC'
-              ? (<><Navbar /><ClinicHome /></>)
+              ? (<><Navbar /><ClinicDashboardPage /></>)
               : <Navigate to="/" replace />
           } 
         />
