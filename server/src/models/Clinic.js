@@ -29,11 +29,11 @@ const ClinicSchema = new mongoose.Schema({
     default: ''
   },
   operatingHours: {
-    monday: { open: String, close: String },
-    tuesday: { open: String, close: String },
-    wednesday: { open: String, close: String },
-    thursday: { open: String, close: String },
-    friday: { open: String, close: String },
+    monday: { open: { type: String, default: '08:00' }, close: { type: String, default: '18:00' } },
+    tuesday: { open: { type: String, default: '08:00' }, close: { type: String, default: '18:00' } },
+    wednesday: { open: { type: String, default: '08:00' }, close: { type: String, default: '18:00' } },
+    thursday: { open: { type: String, default: '08:00' }, close: { type: String, default: '18:00' } },
+    friday: { open: { type: String, default: '08:00' }, close: { type: String, default: '18:00' } },
     saturday: { open: String, close: String },
     sunday: { open: String, close: String }
   },

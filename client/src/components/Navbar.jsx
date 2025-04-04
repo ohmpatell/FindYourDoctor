@@ -49,18 +49,19 @@ export default function Navbar() {
   if (auth.isAuthenticated) {
     if (auth.user.role === 'USER') {
       navLinks = [
+        { label: 'Home', path: '/user/home' },
         { label: 'Search Doctors', path: '/search' },
         { label: 'My Appointments', path: '/my-appointments' },
       ];
     } else if (auth.user.role === 'CLINIC') {
       navLinks = [
-        { label: 'Dashboard', path: '/clinic/dashboard' },
+        { label: 'Home', path: '/clinic/home' },
         { label: 'Manage Appointments', path: '/my-appointments' },
         { label: 'Register Doctor', path: '/clinic/register-doctor' },
       ];
     } else if (auth.user.role === 'DOCTOR') {
       navLinks = [
-        { label: 'Dashboard', path: '/doctor/home' },
+        { label: 'Home', path: '/doctor/home' },
         { label: 'Manage Appointments', path: '/my-appointments' },
         { label: 'My Schedule', path: '/doctor/schedule' },
       ];

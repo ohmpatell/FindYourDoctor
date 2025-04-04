@@ -146,7 +146,7 @@ const registerUser = asyncHandler(async (req, res) => {
  */
 
 const registerClinic = asyncHandler(async (req, res) => {
-    const { name, email, password, phoneNumber, address, profileImage } = req.body;
+    const { name, email, password, phoneNumber, street, city, province, profileImage } = req.body;
   
     const clinicExists = await Clinic.findOne({ email });
     if (clinicExists) return res.status(400).json({ message: 'Clinic already exists' });
@@ -156,7 +156,11 @@ const registerClinic = asyncHandler(async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      address,
+      address: {
+        city,
+        street,
+        province,
+      },
       phoneNumber,
       profileImage,
       role: 'CLINIC'

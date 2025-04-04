@@ -10,14 +10,13 @@ import ClinicRegisterPage from './pages/Auth/ClinicRegisterPage';
 import DoctorRegisterPage from './pages/Auth/DoctorRegisterPage';
 import ClinicDashboardPage from './pages/ClinicDashboardPage';
 import SearchDoctorPage from './pages/SearchDoctor/SearchDoctor';
+import UserHome from './pages/UserHome';
 
 // Protected Pages
 import MyAppointmentsPage from './pages/MyAppointmentsPage';
-import ClinicDashboardPage from './pages/ClinicDashboardPage';
 import ManageAppointmentsPage from './pages/ManageAppointmentsPage';
 
 // Dummy components for demonstration
-const UserHome = () => <div>User Home</div>;
 const DoctorHome = () => <div>Doctor Home</div>;
 
 const LayoutWithNavbar = () => (
@@ -52,6 +51,7 @@ function App() {
           {/* Protected Routes */}
           {auth.isAuthenticated ? (
             <Route element={<LayoutWithNavbar />}>
+              <Route path="/" element={<Navigate to={`/${auth.user.role.toLowerCase()}/home`} replace />} />
               <Route path="/user/home" element={<UserHome />} />
               <Route path="/clinic/home" element={<ClinicDashboardPage />} />
               <Route path="/doctor/home" element={<DoctorHome />} />

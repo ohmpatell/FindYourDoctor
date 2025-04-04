@@ -89,10 +89,10 @@ export const AuthProvider = ({ children }) => {
   /**
    * Register a new clinic. On success, the server sets an httpOnly cookie, auto-logging in the clinic.
    */
-  const registerClinic = async (name, email, password, phoneNumber, address, profileImage) => {
+  const registerClinic = async (name, email, password, phoneNumber, street, city, province, profileImage) => {
     const response = await api.post(
       '/auth/register/clinic',
-      { name, email, password, phoneNumber, address, profileImage }
+      { name, email, password, phoneNumber, street, city, province, profileImage }
     );
     await fetchUser();
     return response.data;
