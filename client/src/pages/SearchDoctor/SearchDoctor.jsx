@@ -17,7 +17,7 @@ import {
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import DoctorDetail from '../../components/DoctorDetail';
-import Appointment from '../../components/Appointment'; 
+import BookAppointment from '../../components/BookAppointment';
 import api from '../../services/api';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
@@ -275,7 +275,7 @@ function SearchDoctorPage() {
 
       {/* Appointment Modal */}
       {openAppointment && selectedDoctor && (
-        <Appointment
+        <BookAppointment
           open={openAppointment}
           doctor={selectedDoctor}
           onClose={() => setOpenAppointment(false)}

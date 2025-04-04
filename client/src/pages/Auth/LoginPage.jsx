@@ -1,5 +1,5 @@
 // src/pages/LoginPage.jsx
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Container, CssBaseline, Box, Grid, Paper, Avatar, Typography, TextField, FormControlLabel, Checkbox, Button, Link } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { useTheme } from '@mui/material/styles';
@@ -12,7 +12,7 @@ function LoginPage() {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const navigate = useNavigate();
   const { login } = useAuth();
-  
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [remember, setRemember] = useState(false);
@@ -22,10 +22,8 @@ function LoginPage() {
     e.preventDefault();
     try {
       const data = await login(email, password);
-      if(data.user.role === 'CLINIC') {
-        navigate('/clinic/home');
-      } else {
-        navigate('/user/home');
+      if (data) {
+        navigate(`/${data.role.toLowerCase()}/home`); // Redirect based on user role
       }
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed. Please try again.');

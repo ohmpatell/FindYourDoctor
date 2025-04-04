@@ -22,7 +22,7 @@ const createAppointment = asyncHandler(async (req, res) => {
             doctor: doctorId,
             clinic: clinicId,
             appointmentDate: new Date(appointmentDate),
-            notes: patientConcerns 
+            patientConcerns: patientConcerns 
         });
 
         await Doctor.findByIdAndUpdate(doctorId, {
@@ -57,11 +57,11 @@ const getAllAppointments = asyncHandler(async (req, res) => {
       let appointments;
   
       if (user.role === 'USER') {
-        appointments = await Appointment.find({ patient: user._id });
+        appointments = await Appointment.find({ patient: user._id }).populate('patient doctor clinic');
       } else if (user.role === 'DOCTOR') {
-        appointments = await Appointment.find({ doctor: user._id });
+        appointments = await Appointment.find({ doctor: user._id }).populate('patient doctor clinic');
       } else if (user.role === 'CLINIC') {
-        appointments = await Appointment.find({ clinic: user._id });
+        appointments = await Appointment.find({ clinic: user._id }).populate('patient doctor clinic');
       } else {
         appointments = await Appointment.find({});
       }
