@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 
 const connectDB = require('./config/db');
 
@@ -8,8 +9,15 @@ connectDB();
 
 const app = express();
 
-app.use(cors());
+const corsOptions = {
+  origin: ['http://localhost:5173', 'http://localhost:5174'],
+  credentials: true, 
+};
+
+app.use(cors(corsOptions));
+
 app.use(express.json());
+app.use(cookieParser());
 
 app.get('/', (req, res) => {
   res.send('Welcome to FindYourDoctor Backend Server');
@@ -23,6 +31,7 @@ const doctorRoutes = require('./routes/doctor.routes');
 const appointmentRoutes = require('./routes/appointment.routes');
 const walkInRoutes = require('./routes/walkin.routes');
 const clinicRoutes = require('./routes/clinic.routes');
+
 
 app.use('/api/auth', authRoutes);
 

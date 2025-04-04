@@ -13,6 +13,27 @@ const generateToken = (id) => {
     });
 };
 
+const authMe = asyncHandler(async (req, res) => {
+    const token = req.cookies.token;
+    if (!token) {
+      return res.status(401).json({ message: 'Not authorized' });
+    }
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET);
+      // Try to find the user in any of your models
+      let user = await User.findById(decoded.id) ||
+                 await Clinic.findById(decoded.id) ||
+                 await Doctor.findById(decoded.id);
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      res.json({ user });
+    } catch (error) {
+      res.status(401).json({ message: 'Not authorized' });
+    }
+  });
+  
+
 /**
  * @desc    Login user
  * @route   POST /api/auth/login
@@ -26,26 +47,44 @@ const login = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
     let user = await User.findOne({ email });
     if (!user) {
-        user = await Clinic.findOne({ email });
+      user = await Clinic.findOne({ email });
+      if (!user) {
+        user = await Doctor.findOne({ email });
         if (!user) {
-            user = await Doctor.findOne({ email });
-            if (!user) {
-                return res.status(401).json({ message: 'Invalid email or password' });
-            }
+          return res.status(401).json({ message: 'Invalid email or password' });
         }
+      }
     }
-
+  
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(401).json({ message: 'Invalid password' });
-
+  
+    const token = generateToken(user._id);
+  
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production', 
+      sameSite: 'strict',
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+    });
+  
     res.json({
-        _id: user._id,
-        user: user,
-        token: generateToken(user._id)  
-    })
-});
-
-
+      _id: user._id,
+      user: user,
+      // Token is now in a cookie, so you can omit it from the JSON response if desired
+    });
+  });
+  
+  
+  const logout = asyncHandler(async (req, res) => {
+    res.clearCookie('token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+    });
+    res.json({ message: 'Logged out' });
+  });
+  
 
 /**
  * @desc    Register user
@@ -61,27 +100,37 @@ const login = asyncHandler(async (req, res) => {
 
 const registerUser = asyncHandler(async (req, res) => {
     const { firstName, lastName, email, password, phoneNumber, profileImage } = req.body;
-
+  
     const userExists = await User.findOne({ email });
     if (userExists) return res.status(400).json({ message: 'User already exists' });
-
+  
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await User.create({
-        firstName,
-        lastName,
-        email,
-        password: hashedPassword,
-        phoneNumber,
-        profileImage,
-        role: 'USER'
+      firstName,
+      lastName,
+      email,
+      password: hashedPassword,
+      phoneNumber,
+      profileImage,
+      role: 'USER'
     });
-
+  
+    const token = generateToken(user._id);
+  
+    // Set token in cookie to auto-login
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+    });
+  
     res.status(201).json({
-        _id: user._id,
-        user: user,
-        token: generateToken(user._id)
+      _id: user._id,
+      user: user,
     });
-});
+  });
+  
 
 
 /**
@@ -97,28 +146,42 @@ const registerUser = asyncHandler(async (req, res) => {
  */
 
 const registerClinic = asyncHandler(async (req, res) => {
-    const { name, email, password, phoneNumber, address, profileImage } = req.body;
-
+    const { name, email, password, phoneNumber, street, city, province, profileImage } = req.body;
+  
     const clinicExists = await Clinic.findOne({ email });
     if (clinicExists) return res.status(400).json({ message: 'Clinic already exists' });
-
+  
     const hashedPassword = await bcrypt.hash(password, 10);
     const clinic = await Clinic.create({
-        name,
-        email,
-        password: hashedPassword,
-        address,
-        phoneNumber,
-        profileImage,
-        role: 'CLINIC'
+      name,
+      email,
+      password: hashedPassword,
+      address: {
+        city,
+        street,
+        province,
+      },
+      phoneNumber,
+      profileImage,
+      role: 'CLINIC'
     });
-
+  
+    const token = generateToken(clinic._id);
+  
+    // Set token in cookie to auto-login
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+    });
+  
     res.status(201).json({
-        _id: clinic._id,
-        user: clinic,
-        token: generateToken(clinic._id)
+      _id: clinic._id,
+      user: clinic,
     });
-});
+  });
+  
 
 
 /**
@@ -165,7 +228,9 @@ const registerDoctor = asyncHandler(async (req, res) => {
 });
 
 module.exports = {
+    authMe,
     login,
+    logout,
     registerUser,
     registerClinic,
     registerDoctor

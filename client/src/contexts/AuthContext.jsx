@@ -1,89 +1,135 @@
-import { useState, createContext, useContext, useEffect } from 'react';
+import React, { useState, createContext, useContext, useEffect } from 'react';
 import api from '../services/api';
+import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext();
 
 export const useAuth = () => {
-    const context = useContext(AuthContext);
-    if (!context) {
-        throw new Error('useAuth must be used within an AuthProvider');
-    }
-    return context;
-}
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};
 
 export const AuthProvider = ({ children }) => {
+  // Start with a loading state while we verify the user.
   const [auth, setAuth] = useState({
     isAuthenticated: false,
     user: null,
+    loading: true,
   });
+  
+  const navigate = useNavigate();
+  
 
-  const checkLocalStorageForUser = async () => {
-    const userInfo = localStorage.getItem('userInfo') || sessionStorage.getItem('userInfo');
-    if (userInfo) {
-      const { user, token } = JSON.parse(userInfo);
-      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      setAuth({ isAuthenticated: true, user });
+  // This function calls the backend to check if a valid httpOnly cookie is present.
+  const fetchUser = async () => {
+    if (auth.isAuthenticated) return;
+
+    try {
+      const response = await api.get('/auth/me');
+      const { user } = response.data;
+      setAuth({
+        isAuthenticated: true,
+        user,
+        loading: false,
+      });
+
+      if (user) {
+        navigate(`/${user.role.toLowerCase()}/home`); // Redirect based on user role
+      }
+
+    } catch (error) {
+      setAuth({
+        isAuthenticated: false,
+        user: null,
+        loading: false,
+      });
     }
-  }
+  };
 
   useEffect(() => {
-    checkLocalStorageForUser();
+    fetchUser();
   }, []);
 
   /**
-   * @desc Login user
-   * @param {*} email 
-   * @param {*} password 
-   * @returns 
+   * Login user. On success, the server sets an httpOnly cookie, and we fetch the user.
    */
   const login = async (email, password) => {
     const response = await api.post('/auth/login', { email, password });
-    const { user, token } = response.data;
-    localStorage
-      ? localStorage.setItem('userInfo', JSON.stringify({ user, token }))
-      : sessionStorage.setItem('userInfo', JSON.stringify({ user, token }));
-
-    setAuth({ isAuthenticated: true, user });
+    await fetchUser(); // Refresh auth state after login.
     return response.data;
-    };
+  };
 
-    const logout = () => {
-        localStorage.removeItem('userInfo');
-        sessionStorage.removeItem('userInfo');
-        setAuth({ isAuthenticated: false, user: null });
-    };
+  /**
+   * Logout user. This calls an endpoint to clear the cookie.
+   */
+  const logout = async () => {
+    await api.post('/auth/logout');
+    setAuth({
+      isAuthenticated: false,
+      user: null,
+      loading: false,
+    });
+  };
 
-    const registerUser = async (firstName, lastName, email, password, phoneNumber, profileImage) => {
-        const response = await api.post('/auth/register/user', { firstName, lastName, email, password, phoneNumber, profileImage });
-        const { user, token } = response.data;
-        localStorage
-            ? localStorage.setItem('userInfo', JSON.stringify({ user, token }))
-            : sessionStorage.setItem('userInfo', JSON.stringify({ user, token }));
-
-        setAuth({ isAuthenticated: true, user });
-        return response.data;
-    };
-
-    const registerClinic = async (name, email, password, phoneNumber, address, profileImage) => {
-        const response = await api.post('/auth/register/clinic', { name, email, password, phoneNumber, address, profileImage });
-        const { user, token } = response.data;
-        localStorage
-            ? localStorage.setItem('userInfo', JSON.stringify({ user, token }))
-            : sessionStorage.setItem('userInfo', JSON.stringify({ user, token }));
-
-        setAuth({ isAuthenticated: true, user });
-        return response.data;
-    };
-    
-    const registerDoctor = async (firstName, lastName, email, password, phoneNumber, specialization, clinicId, profileImage) => {
-        const response = await api.post('/auth/register/doctor', { firstName, lastName, email, password, phoneNumber, specialization, clinicId, profileImage });
-        return response.data;
-    };
-    
-
-    return (
-        <AuthContext.Provider value={{ auth, checkLocalStorageForUser, login, logout, registerUser, registerClinic, registerDoctor }}>
-            {children}
-        </AuthContext.Provider>
+  /**
+   * Register a new user. On success, the server sets an httpOnly cookie, auto-logging in the user.
+   */
+  const registerUser = async (firstName, lastName, email, password, phoneNumber, profileImage) => {
+    const response = await api.post(
+      '/auth/register/user',
+      { firstName, lastName, email, password, phoneNumber, profileImage }
     );
+    await fetchUser();
+    return response.data;
+  };
+
+  /**
+   * Register a new clinic. On success, the server sets an httpOnly cookie, auto-logging in the clinic.
+   */
+  const registerClinic = async (name, email, password, phoneNumber, street, city, province, profileImage) => {
+    const response = await api.post(
+      '/auth/register/clinic',
+      { name, email, password, phoneNumber, street, city, province, profileImage }
+    );
+    await fetchUser();
+    return response.data;
+  };
+
+  /**
+   * Register a new doctor.
+   * Note: If you don't intend to auto-login a doctor after registration,
+   * you might not call fetchUser() here.
+   */
+  const registerDoctor = async (
+    firstName,
+    lastName,
+    email,
+    password,
+    phoneNumber,
+    specialization,
+    clinicId,
+    profileImage
+  ) => {
+    const response = await api.post(
+      '/auth/register/doctor',
+      { firstName, lastName, email, password, phoneNumber, specialization, clinicId, profileImage }
+    );
+    return response.data;
+  };
+
+  // Optionally, while loading you can show a spinner or any placeholder.
+  if (auth.loading) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <AuthContext.Provider value={{ auth, login, logout, registerUser, registerClinic, registerDoctor }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
+
+export default AuthProvider;

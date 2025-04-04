@@ -1,6 +1,15 @@
-// src/components/Navbar.jsx
 import React from 'react';
-import { AppBar, Toolbar, Typography, Button, IconButton, Box, Menu, MenuItem, Avatar } from '@mui/material';
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  IconButton,
+  Box,
+  Menu,
+  MenuItem,
+  Avatar
+} from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -11,6 +20,7 @@ export default function Navbar() {
   const [mobileAnchorEl, setMobileAnchorEl] = React.useState(null);
   const [userAnchorEl, setUserAnchorEl] = React.useState(null);
 
+  // Handle mobile menu toggle
   const handleMobileMenuOpen = (event) => {
     setMobileAnchorEl(event.currentTarget);
   };
@@ -19,6 +29,7 @@ export default function Navbar() {
     setMobileAnchorEl(null);
   };
 
+  // Handle user menu toggle
   const handleUserMenuOpen = (event) => {
     setUserAnchorEl(event.currentTarget);
   };
@@ -33,27 +44,25 @@ export default function Navbar() {
     navigate('/');
   };
 
-  const handleProfile = () => {
-    handleUserMenuClose();
-    navigate('/profile');
-  };
-
+  // Define nav links based on role
   let navLinks = [{ label: 'Home', path: '/' }];
   if (auth.isAuthenticated) {
     if (auth.user.role === 'USER') {
       navLinks = [
+        { label: 'Home', path: '/user/home' },
         { label: 'Search Doctors', path: '/search' },
-        { label: 'My Appointments', path: '/user/home' },
+        { label: 'My Appointments', path: '/my-appointments' },
       ];
     } else if (auth.user.role === 'CLINIC') {
       navLinks = [
-        { label: 'Dashboard', path: '/clinic/home' },
-        { label: 'Manage Appointments', path: '/clinic/appointments' },
+        { label: 'Home', path: '/clinic/home' },
+        { label: 'Manage Appointments', path: '/my-appointments' },
         { label: 'Register Doctor', path: '/clinic/register-doctor' },
       ];
     } else if (auth.user.role === 'DOCTOR') {
       navLinks = [
-        { label: 'Dashboard', path: '/doctor/home' },
+        { label: 'Home', path: '/doctor/home' },
+        { label: 'Manage Appointments', path: '/my-appointments' },
         { label: 'My Schedule', path: '/doctor/schedule' },
       ];
     }
@@ -62,25 +71,34 @@ export default function Navbar() {
   return (
     <AppBar position="static">
       <Toolbar>
-        {/* Mobile hamburger menu */}
-        <IconButton
-          edge="start"
-          color="inherit"
-          aria-label="menu"
-          sx={{ display: { xs: 'block', md: 'none' } }}
-          onClick={handleMobileMenuOpen}
-        >
-          <MenuIcon />
-        </IconButton>
+        {/* Left: Logo + Clinic Name */}
+        <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
+          <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            sx={{ display: { xs: 'block', md: 'none' }, mr: 1 }}
+            onClick={handleMobileMenuOpen}
+          >
+            <MenuIcon />
+          </IconButton>
 
-        {/* Logo Image */}
-        <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center' }}>
           <Link to="/">
-            <img src="/logo.png" alt="FindYourDoctor" style={{ height: 40, filter: 'brightness(0) invert(1)', marginTop: 5 }} />
+            <img
+              src="/logo.png"
+              alt="FindYourDoctor"
+              style={{ height: 40, filter: 'brightness(0) invert(1)', marginTop: 5 }}
+            />
           </Link>
+
+          {auth.isAuthenticated && auth.user.role === 'CLINIC' && (
+            <Typography variant="h6" sx={{ ml: 2 }}>
+              {auth.user.name}
+            </Typography>
+          )}
         </Box>
 
-        {/* Desktop Navigation Links */}
+        {/* Desktop nav links */}
         <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
           {navLinks.map((link) => (
             <Button
@@ -94,18 +112,18 @@ export default function Navbar() {
           ))}
         </Box>
 
-        {/* User Avatar and Menu (visible when authenticated) */}
+        {/* User Avatar */}
         {auth.isAuthenticated && (
           <IconButton onClick={handleUserMenuOpen} sx={{ ml: 2 }}>
             <Avatar
-              alt={auth.user.firstName || 'User'}
+              alt={auth.user.name || 'User'}
               src={auth.user.profileImage || ''}
             />
           </IconButton>
         )}
       </Toolbar>
 
-      {/* Mobile Menu */}
+      {/* Mobile menu dropdown */}
       <Menu
         anchorEl={mobileAnchorEl}
         open={Boolean(mobileAnchorEl)}
@@ -129,13 +147,12 @@ export default function Navbar() {
         )}
       </Menu>
 
-      {/* User Menu */}
+      {/* Avatar menu (top-right) */}
       <Menu
         anchorEl={userAnchorEl}
         open={Boolean(userAnchorEl)}
         onClose={handleUserMenuClose}
       >
-        <MenuItem onClick={handleProfile}>Profile</MenuItem>
         <MenuItem onClick={handleLogout}>Logout</MenuItem>
       </Menu>
     </AppBar>

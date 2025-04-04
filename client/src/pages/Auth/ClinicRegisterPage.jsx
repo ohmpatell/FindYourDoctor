@@ -34,7 +34,9 @@ function ClinicRegisterPage() {
     email: '',
     password: '',
     phoneNumber: '',
-    address: '',
+    street: '',
+    city: '',
+    province: '',
     profileImage: ''
   });
   const [termsAccepted, setTermsAccepted] = useState(false);
@@ -66,7 +68,10 @@ function ClinicRegisterPage() {
       if(!formData.email.trim()) newErrors.email = 'Required';
       if(!formData.password.trim()) newErrors.password = 'Required';
       if(!formData.phoneNumber.trim()) newErrors.phoneNumber = 'Required';
-      if(!formData.address.trim()) newErrors.address = 'Required';
+      if(!formData.street.trim()) newErrors.street = 'Required';
+      if(!formData.city.trim()) newErrors.city = 'Required';
+      if(!formData.province.trim()) newErrors.province = 'Required';
+      if(!/^\S+@\S+\.\S+$/.test(formData.email)) newErrors.email = 'Invalid email address';
     }
     if(activeStep === 2) {
       if(!termsAccepted) newErrors.terms = 'You must accept the terms';
@@ -90,7 +95,9 @@ function ClinicRegisterPage() {
           updatedFormData.email,
           updatedFormData.password,
           updatedFormData.phoneNumber,
-          updatedFormData.address,
+          updatedFormData.street,
+          updatedFormData.city,
+          updatedFormData.province,
           updatedFormData.profileImage
         );
         navigate('/clinic/home');
@@ -192,17 +199,44 @@ function ClinicRegisterPage() {
                 error={Boolean(errors.phoneNumber)}
                 helperText={errors.phoneNumber}
               />
-              <TextField
-                label="Address"
-                name="address"
-                fullWidth
-                required
-                margin="normal"
-                value={formData.address}
-                onChange={handleChange}
-                error={Boolean(errors.address)}
-                helperText={errors.address}
-              />
+              <Grid container spacing={2} sx={{ mt: 1 }}>
+                <Grid item xs={4}>
+                  <TextField
+                    label="Street"
+                    name="street"
+                    fullWidth
+                    required
+                    value={formData.street}
+                    onChange={handleChange}
+                    error={Boolean(errors.street)}
+                    helperText={errors.street}
+                  />
+                </Grid>
+                <Grid item xs={4}>
+                  <TextField
+                    label="City"
+                    name="city"
+                    fullWidth
+                    required
+                    value={formData.city}
+                    onChange={handleChange}
+                    error={Boolean(errors.city)}
+                    helperText={errors.city}
+                  />
+                </Grid>
+                <Grid item xs={4}>
+                  <TextField
+                    label="Province"
+                    name="province"
+                    fullWidth
+                    required
+                    value={formData.province}
+                    onChange={handleChange}
+                    error={Boolean(errors.province)}
+                    helperText={errors.province}
+                  />
+                </Grid>
+              </Grid>
             </>
           )}
           {activeStep === 2 && (

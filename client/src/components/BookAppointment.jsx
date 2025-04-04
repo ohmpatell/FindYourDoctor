@@ -32,7 +32,7 @@ const modalStyle = {
 
 const steps = ['Select Date', 'Select Time', 'Add Concerns', 'Confirmation'];
 
-export default function Appointment({ open, onClose, doctor }) {
+export default function BookAppointment({ open, onClose, doctor }) {
 
   const { auth } = useAuth();
   
@@ -88,11 +88,11 @@ export default function Appointment({ open, onClose, doctor }) {
     appointmentDateTime.setHours(parseInt(selectedTime, 10), 0, 0, 0);
 
     try {
-      await api.post('/appointments', {
+      await api.post('/appointment', {
         patientId: auth.user._id,
         doctorId: doctor._id,
         appointmentDate: appointmentDateTime,
-        concerns: concerns,
+        patientConcerns: concerns,
       });
       setSnackbarMsg('Appointment confirmed!');
       setAppointmentConfirmed(true);
