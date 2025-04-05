@@ -5,8 +5,8 @@ import {
 } from '@mui/material';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import api from '../services/api'; // Your axios instance
-import RegisterWalkIn from '../components/RegisterWalkIn'; 
+import api from '../services/api';
+import WalkInFlow from '../components/WalkInFlow';
 
 export default function ClinicDashboardPage() {
   const { auth } = useAuth();
@@ -14,9 +14,7 @@ export default function ClinicDashboardPage() {
 
   const [doctors, setDoctors] = useState([]);
   const [appointments, setAppointments] = useState([]);
-
   const [openWalkIn, setOpenWalkIn] = useState(false);
-
 
   useEffect(() => {
     fetchDoctors();
@@ -25,7 +23,7 @@ export default function ClinicDashboardPage() {
 
   const fetchDoctors = async () => {
     try {
-      const response = await api.get(`/clinics/doctors`,{withCredentials:true}); // 🔁 You should implement this endpoint
+      const response = await api.get(`/clinics/doctors`, { withCredentials: true });
       setDoctors(response.data);
     } catch (err) {
       console.error('Error fetching doctors:', err);
@@ -34,7 +32,7 @@ export default function ClinicDashboardPage() {
 
   const fetchAppointments = async () => {
     try {
-      const response = await api.get(`/clinic/appointments/today`); // 🔁 Backend returns today's appointments
+      const response = await api.get(`/clinic/appointments/today`);
       setAppointments(response.data);
     } catch (err) {
       console.error('Error fetching appointments:', err);
@@ -56,17 +54,23 @@ export default function ClinicDashboardPage() {
         Today's Appointments
       </Typography>
       <Stack spacing={2} sx={{ p: 2 }}>
-      <Button 
-        variant="contained" 
-        onClick={() => setOpenWalkIn(true)} // Fixed: Wrapped in arrow function
-      >
-        Register Walk-In Patient
-      </Button>
-      <RegisterWalkIn 
-        open={openWalkIn} 
-        onClose={() => setOpenWalkIn(false)} // Added close handler
-      />
-    </Stack>
+        <Button 
+          variant="contained" 
+          onClick={() => setOpenWalkIn(true)}
+        >
+          Register Walk-In Patient
+        </Button>
+        <WalkInFlow 
+          open={openWalkIn} 
+          onClose={() => setOpenWalkIn(false)}
+          doctors={doctors} // Pass doctors as prop
+          onAppointmentCreated={() => {
+            // Refresh appointments after successful creation
+            fetchAppointments();
+            // Could also add a success notification here
+          }}
+        />
+      </Stack>
 
       <Grid container spacing={3}>
         {doctors.map((doctor) => (
