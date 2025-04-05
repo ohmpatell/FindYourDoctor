@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 import {
   Container,
   Typography,
@@ -21,38 +21,24 @@ import { useAuth } from '../contexts/AuthContext';
 
 
 const UserProfilePage = () => {
-  const [profile, setProfile] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phoneNumber: '',
-    profileImage: '',
-    gender: '',
-    dob: '',
-    address: ''
-  });
-
-  const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const { updateProfileImage } = useAuth();
-
-
-  useEffect(() => {
-    axios.get('/api/profile', { withCredentials: true })
-      .then(res => {
-        const data = res.data;
-        const formattedDob = data.dob ? data.dob.slice(0, 10) : '';
-        setProfile({ ...data, dob: formattedDob });
-        setLoading(false);
-      })
-      .catch(() => {
-        setMessage('Failed to load profile.');
-        setOpen(true);
-        setLoading(false);
-      });
-  }, []);
+  const { auth } = useAuth();
+  const user = auth.user;
+  const [profile, setProfile] = useState({
+    firstName: user.firstName,
+    lastName: user.lastName,
+    email: user.email,
+    phoneNumber: user.phoneNumber,
+    profileImage: user.profileImage,
+    gender: user.gender,
+    dob: user.dob,
+    address: user.address,
+  });
+  const [pfp, setPfp] = useState(user.profileImage || '');
+  const [image, setImage] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -63,8 +49,15 @@ const UserProfilePage = () => {
     e.preventDefault();
     setSaving(true);
     try {
-      const res = await axios.put('/api/profile', profile, { withCredentials: true });
+      let updatedProfile = { ...profile };
+      if (image) {
+        const uploadResult = await uploadImage(image);
+        updatedProfile = { ...updatedProfile, profileImage: uploadResult };
+      }
+
+      const res = await api.put('/profile', updatedProfile, { withCredentials: true });
       setMessage(res.data.message || 'Profile updated!');
+      updateProfileImage(updatedProfile.profileImage);
     } catch (err) {
       setMessage("Update failed.");
     } finally {
@@ -83,25 +76,14 @@ const UserProfilePage = () => {
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      try {
-        const imageUrl = await uploadImage(file);
-        setProfile(prev => ({ ...prev, profileImage: imageUrl }));
-        updateProfileImage(imageUrl); //update the Avatar in Navbar
-        setMessage("✅ Image uploaded successfully!");
-        setOpen(true);
-      } catch (err) {
-        setMessage("❌ Image upload failed.");
-        setOpen(true);
+      if (file) {
+        setPfp(URL.createObjectURL(file));
+        setImage(file);
       }
     }
   };
 
 
-  if (loading) return (
-    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 10 }}>
-      <CircularProgress />
-    </Box>
-  );
   return (
     <Container maxWidth="sm" sx={{ mt: 5 }}>
       <Typography variant="h4" align="center" gutterBottom>
@@ -111,7 +93,7 @@ const UserProfilePage = () => {
       <Grid container justifyContent="center" sx={{ mb: 2 }}>
         <Avatar
           alt="Profile Image"
-          src={profile.profileImage}
+          src={pfp}
           sx={{ width: 150, height: 150 }}
         />
       </Grid>
@@ -159,19 +141,27 @@ const UserProfilePage = () => {
             </FormControl>
           </Grid>
           <Grid item xs={6}>
-            <TextField fullWidth type="date" name="dob" value={profile.dob} onChange={handleChange} label="Date of Birth" InputLabelProps={{ shrink: true }} />
+            <TextField
+              fullWidth
+              type="date"
+              name="dob"
+              value={profile.dob ? new Date(profile.dob).toISOString().split('T')[0] : ''}
+              onChange={handleChange}
+              label="Date of Birth"
+              InputLabelProps={{ shrink: true }}
+            />
           </Grid>
           <Grid item xs={12}>
-          <Button
-            fullWidth
-            variant="contained"
-            color="primary"
-            type="submit"
-            disabled={saving}
-            startIcon={saving && <CircularProgress size={20} color="inherit" />}
-          >
-            {saving ? 'Saving...' : 'Save Changes'}
-          </Button>
+            <Button
+              fullWidth
+              variant="contained"
+              color="primary"
+              type="submit"
+              disabled={saving}
+              startIcon={saving && <CircularProgress size={20} color="inherit" />}
+            >
+              {saving ? 'Saving...' : 'Save Changes'}
+            </Button>
 
           </Grid>
         </Grid>

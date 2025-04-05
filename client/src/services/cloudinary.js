@@ -1,7 +1,6 @@
 import axios from 'axios';
 
-//const CLOUDINARY_CLOUD_NAME = 'dm5suokyk';
-const CLOUDINARY_CLOUD_NAME = 'da26yd30g';
+const CLOUDINARY_CLOUD_NAME = 'dm5suokyk';
 const CLOUDINARY_UPLOAD_PRESET = 'user-pfp';
 
 /**

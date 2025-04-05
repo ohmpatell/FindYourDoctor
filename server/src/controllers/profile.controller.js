@@ -27,11 +27,14 @@ const updateProfile = async (req, res) => {
     return res.status(403).json({ message: 'Access denied.' });
   }
 
-  const allowedFields = ['firstName', 'lastName', 'phoneNumber', 'profileImage'];
+  const allowedFields = ['firstName', 'lastName', 'phoneNumber', 'profileImage', 'gender', 'dob', 'address'];
   const filteredUpdates = {};
 
   allowedFields.forEach(field => {
     if (updates[field] !== undefined) {
+      if (field === 'dob') {
+        filteredUpdates[field] = new Date(updates[field]);
+      }
       filteredUpdates[field] = updates[field];
     }
   });
@@ -44,13 +47,6 @@ const updateProfile = async (req, res) => {
 
   res.json({
     message: 'Profile updated successfully',
-    user: {
-      firstName: updatedUser.firstName,
-      lastName: updatedUser.lastName,
-      email: updatedUser.email,
-      phoneNumber: updatedUser.phoneNumber,
-      profileImage: updatedUser.profileImage,
-    }
   });
 };
 
