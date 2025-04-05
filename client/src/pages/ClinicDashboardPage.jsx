@@ -25,7 +25,7 @@ export default function ClinicDashboardPage() {
 
   const fetchDoctors = async () => {
     try {
-      const response = await api.get(`/clinic/doctors`); // 🔁 You should implement this endpoint
+      const response = await api.get(`/clinics/doctors`,{withCredentials:true}); // 🔁 You should implement this endpoint
       setDoctors(response.data);
     } catch (err) {
       console.error('Error fetching doctors:', err);

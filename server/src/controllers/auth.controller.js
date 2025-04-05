@@ -71,6 +71,7 @@ const login = asyncHandler(async (req, res) => {
     res.json({
       _id: user._id,
       user: user,
+      role: user instanceof Clinic ? 'clinic' : user instanceof Doctor ? 'doctor' : 'user'
       // Token is now in a cookie, so you can omit it from the JSON response if desired
     });
   });
