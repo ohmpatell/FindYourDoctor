@@ -49,6 +49,16 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const updateProfileImage = (newImageUrl) => {
+    setAuth(prev => ({
+      ...prev,
+      user: {
+        ...prev.user,
+        profileImage: newImageUrl
+      }
+    }));
+  };
+
   useEffect(() => {
     fetchUser();
   }, []);
@@ -126,7 +136,7 @@ export const AuthProvider = ({ children }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ auth, login, logout, registerUser, registerClinic, registerDoctor }}>
+    <AuthContext.Provider value={{ auth, login, logout, registerUser, registerClinic, registerDoctor,updateProfileImage }}>
       {children}
     </AuthContext.Provider>
   );

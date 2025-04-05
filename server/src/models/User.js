@@ -26,6 +26,18 @@ const UserSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
+  //3 new fields added
+  gender: {
+    type: String,
+    enum: ['Male', 'Female', 'Other'],
+    default: 'Other'
+  },
+  dob: {
+    type: Date
+  },
+  address: {
+    type: String
+  },
   appointments: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Appointment'

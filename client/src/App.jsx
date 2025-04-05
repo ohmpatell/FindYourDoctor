@@ -15,6 +15,7 @@ import UserHome from './pages/UserHome';
 // Protected Pages
 import MyAppointmentsPage from './pages/MyAppointmentsPage';
 import ManageAppointmentsPage from './pages/ManageAppointmentsPage';
+import UserProfilePage from './pages/UserProfilePage';
 
 // Dummy components for demonstration
 const DoctorHome = () => <div>Doctor Home</div>;
@@ -53,6 +54,7 @@ function App() {
             <Route element={<LayoutWithNavbar />}>
               <Route path="/" element={<Navigate to={`/${auth.user.role.toLowerCase()}/home`} replace />} />
               <Route path="/user/home" element={<UserHome />} />
+              <Route path="/user/profile" element={<UserProfilePage />} />
               <Route path="/clinic/home" element={<ClinicDashboardPage />} />
               <Route path="/doctor/home" element={<DoctorHome />} />
               <Route path="/clinic/appointments/:doctorId" element={<ManageAppointmentsPage />} />
