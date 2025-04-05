@@ -153,6 +153,12 @@ export default function Navbar() {
         open={Boolean(userAnchorEl)}
         onClose={handleUserMenuClose}
       >
+        <MenuItem onClick={() => {
+          handleUserMenuClose();
+          navigate('/user/profile');
+        }}>
+          My Profile
+        </MenuItem>
         <MenuItem onClick={handleLogout}>Logout</MenuItem>
       </Menu>
     </AppBar>
