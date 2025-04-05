@@ -3,7 +3,6 @@ import axios from 'axios';
 const CLOUDINARY_CLOUD_NAME = 'dm5suokyk';
 const CLOUDINARY_UPLOAD_PRESET = 'user-pfp';
 
-
 /**
  * Uploads an image to Cloudinary.
  *
