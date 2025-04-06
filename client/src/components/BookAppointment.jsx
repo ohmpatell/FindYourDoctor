@@ -32,8 +32,19 @@ const modalStyle = {
 
 const steps = ['Select Date', 'Select Time', 'Add Concerns', 'Confirmation'];
 
-export default function BookAppointment({ open, onClose, doctor }) {
-
+export default function BookAppointment({ 
+  open, 
+  onClose, 
+  doctor, 
+  user = null,
+  walkInPatient = null, 
+  onSuccess }) {
+  
+  const patient = user || walkInPatient;
+  if (!patient) {
+    console.error("No patient data provided!");
+    return null;
+  }
   const { auth } = useAuth();
   
 
@@ -88,8 +99,9 @@ export default function BookAppointment({ open, onClose, doctor }) {
     appointmentDateTime.setHours(parseInt(selectedTime, 10), 0, 0, 0);
 
     try {
+      console.log(auth.user.firstName);
       await api.post('/appointment', {
-        patientId: auth.user._id,
+        patientId: patient._id,
         doctorId: doctor._id,
         appointmentDate: appointmentDateTime,
         patientConcerns: concerns,
@@ -97,6 +109,9 @@ export default function BookAppointment({ open, onClose, doctor }) {
       setSnackbarMsg('Appointment confirmed!');
       setAppointmentConfirmed(true);
       setSnackbarOpen(true);
+      if (onSuccess) {
+        onSuccess(); // Call the onSuccess callback if provided
+      }
     } catch (error) {
       console.error('Error confirming appointment:', error);
       setSnackbarMsg('Error confirming appointment.');

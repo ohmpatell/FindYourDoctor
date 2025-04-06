@@ -278,6 +278,7 @@ function SearchDoctorPage() {
         <BookAppointment
           open={openAppointment}
           doctor={selectedDoctor}
+          user={auth.user}
           onClose={() => setOpenAppointment(false)}
         />
       )}

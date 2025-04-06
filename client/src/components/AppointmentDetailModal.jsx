@@ -1,5 +1,5 @@
 // src/components/AppointmentDetailModal.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Paper,
@@ -25,12 +25,14 @@ import { useAuth } from '../contexts/AuthContext';
 export default function AppointmentDetailModal({ 
   appointment: initialAppointment, 
   open, 
-  onClose 
+  onClose,
+  onUpdate
 }) {
   const { auth } = useAuth();
   const [appointment, setAppointment] = useState(initialAppointment);
   const [editMode, setEditMode] = useState(false);
-  const [notes, setNotes] = useState(appointment?.notes || '');
+  const [patientConcerns, setPatientConcerns] = useState(appointment?.patientConcerns || '');
+  const [doctorsNotes, setDoctorsNotes] = useState(appointment?.doctorsNotes || '');
   const [testsResults, setTestsResults] = useState(
     appointment?.testsPrescribed || []
   );
@@ -44,7 +46,8 @@ export default function AppointmentDetailModal({
   // Save changes (update appointment via API)
   const handleSaveChanges = async () => {
     const updates = {
-      notes,
+      patientConcerns,
+      doctorsNotes,
       testsPrescribed: testsResults
     };
 
@@ -66,6 +69,15 @@ export default function AppointmentDetailModal({
       setOpenSnackbar(true);
     }
   };
+
+  useEffect(() => {
+    if (open && initialAppointment) {
+      setAppointment(initialAppointment);
+      setPatientConcerns(initialAppointment.patientConcerns || '');
+      setDoctorsNotes(initialAppointment.doctorsNotes || '');
+      setTestsResults(initialAppointment.testsPrescribed || []);
+    }
+  }, [open, initialAppointment]);
 
   // Cancel appointment (for patients)
   const handleCancelAppointment = async () => {
@@ -181,7 +193,7 @@ export default function AppointmentDetailModal({
               {/* Patient and Doctor Names */}
               <Grid item xs={12} sm={6}>
                 <Typography variant="h6">
-                  Patient: {appointment.patient?.firstName} {appointment.patient?.lastName}
+                  Patient: {initialAppointment.patient?.firstName} {initialAppointment.patient?.lastName}
                 </Typography>
               </Grid>
               <Grid item xs={12} sm={6} sx={{ textAlign: { xs: 'left', sm: 'right' } }}>
@@ -191,16 +203,16 @@ export default function AppointmentDetailModal({
                   sx={{ cursor: 'pointer' }}
                   onClick={openDoctorModal}
                 >
-                  Doctor: Dr. {appointment.doctor?.firstName} {appointment.doctor?.lastName}
+                  Doctor: Dr. {initialAppointment.doctor?.firstName} {initialAppointment.doctor?.lastName}
                 </Typography>
               </Grid>
               {/* Clinic Details */}
               <Grid item xs={12}>
                 <Typography variant="subtitle1">
-                  Clinic: {appointment.clinic?.name}
+                  Clinic: {initialAppointment.clinic?.name}
                 </Typography>
                 <Typography variant="body2" color="textSecondary">
-                  {appointment.clinic?.address?.street || 'N/A'}, {appointment.clinic?.address?.city || 'N/A'}, {appointment.clinic?.address?.province || 'N/A'}
+                  {initialAppointment.clinic?.address?.street || 'N/A'}, {initialAppointment.clinic?.address?.city || 'N/A'}, {initialAppointment.clinic?.address?.province || 'N/A'}
                 </Typography>
               </Grid>
               {/* Appointment Date & Status */}
@@ -235,8 +247,8 @@ export default function AppointmentDetailModal({
                       multiline
                       rows={4}
                       fullWidth
-                      value={notes}
-                      onChange={(e) => setNotes(e.target.value)}
+                      value={patientConcerns}
+                      onChange={(e) => setPatientConcerns(e.target.value)}
                       variant="outlined"
                       margin="normal"
                     />
@@ -248,6 +260,26 @@ export default function AppointmentDetailModal({
                 }
               </Grid>
               {/* Doctor's Notes and Prescription */}
+              <Grid item xs={12}>
+                <Typography variant="subtitle1" gutterBottom>Doctor's Notes:</Typography>
+                {editMode && (auth.user.role === 'DOCTOR' || auth.user.role === 'CLINIC') &&
+                  (appointment.status === 'scheduled' || appointment.status === 'confirmed') ? (
+                    <TextField
+                      multiline
+                      rows={4}
+                      fullWidth
+                      value={doctorsNotes}
+                      onChange={(e) => setDoctorsNotes(e.target.value)}
+                      variant="outlined"
+                      margin="normal"
+                    />
+                  ) : (
+                    <Typography variant="body2" paragraph>
+                      {appointment.doctorsNotes || 'No concerns noted.'}
+                    </Typography>
+                  )
+                }
+              </Grid>
               <Grid item xs={12}>
                 <Typography variant="subtitle1" gutterBottom>Prescription:</Typography>
                 <Typography variant="body2" paragraph>
