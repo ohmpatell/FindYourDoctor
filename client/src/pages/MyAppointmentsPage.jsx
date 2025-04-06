@@ -46,7 +46,22 @@ const MyAppointmentsPage = () => {
 
   const handleCloseDetail = () => {
     setIsAppointmentDetailOpen(false);
-    fetchAppointments();
+    // Only refetch if needed (e.g., if status changed)
+    if (selectedAppointment?.status !== appointments.find(a => a._id === selectedAppointment?._id)?.status) {
+      fetchAppointments();
+    }
+  };
+
+  const handleAppointmentUpdate = (updatedAppointment) => {
+    // Update the selected appointment (for modal re-renders)
+    setSelectedAppointment(updatedAppointment);
+    
+    // Update the appointments list
+    setAppointments(prevAppointments =>
+      prevAppointments.map(appointment =>
+        appointment._id === updatedAppointment._id ? updatedAppointment : appointment
+      )
+    );
   };
 
   const isPastAppointment = (appointmentDate) => {

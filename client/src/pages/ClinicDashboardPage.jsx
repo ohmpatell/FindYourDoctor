@@ -116,7 +116,7 @@ export default function ClinicDashboardPage() {
                 <Button
                   variant="contained"
                   fullWidth
-                  onClick={() => navigate(`/clinic/appointments/${doctor._id}`)}
+                  onClick={() => navigate(`/my-appointments`)}
                 >
                   Manage Appointments
                 </Button>
