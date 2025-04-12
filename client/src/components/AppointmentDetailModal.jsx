@@ -1,3 +1,4 @@
+// src/components/AppointmentDetailModal.jsx
 import React, { useState, useEffect } from 'react';
 import {
   Box,
@@ -138,6 +139,15 @@ export default function AppointmentDetailModal({
       setOpenSnackbar(true);
     }
   };
+
+  useEffect(() => {
+    if (open && initialAppointment) {
+      setAppointment(initialAppointment);
+      setPatientConcerns(initialAppointment.patientConcerns || '');
+      setDoctorsNotes(initialAppointment.doctorsNotes || '');
+      setTestsResults(initialAppointment.testsPrescribed || []);
+    }
+  }, [open, initialAppointment]);
 
   // Confirmation for cancel or confirm actions using ConfirmationDialog
   const handleConfirmAction = async () => {

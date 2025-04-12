@@ -7,6 +7,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 import AppointmentDetailModal from './AppointmentDetailModal';
 import DoctorDetail from './DoctorDetail';
+import AppointmentReminderModal from './AppointmentReminderModal';
 
 const UserDashboard = () => {
   const { auth } = useAuth();
@@ -17,6 +18,11 @@ const UserDashboard = () => {
   const [isAppointmentDetailOpen, setIsAppointmentDetailOpen] = useState(false);
 const [doctorDetailOpen, setDoctorDetailOpen] = useState(false);
 const [selectedDoctorId, setSelectedDoctorId] = useState(null);
+
+const [tomorrowAppointments, setTomorrowAppointments] = useState([]);
+const [isReminderOpen, setIsReminderOpen] = useState(false);
+
+
 
 const handleOpenDoctorDetail = (doctorId) => {
     setSelectedDoctorId(doctorId);
@@ -46,6 +52,26 @@ const closeDoctorModal = () => {
         const now = new Date();
         setUpcomingAppointments(sorted.filter(a => new Date(a.appointmentDate) > now));
         setLastAppointment(sorted.filter(a => new Date(a.appointmentDate) <= now).pop());
+        // Find appointments scheduled for tomorrow
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        tomorrow.setHours(0, 0, 0, 0);
+        
+        const dayAfter = new Date(tomorrow);
+        dayAfter.setDate(dayAfter.getDate() + 1);
+
+        const tomorrowAppts = sorted.filter(a => {
+          const apptDate = new Date(a.appointmentDate);
+          return apptDate >= tomorrow && apptDate < dayAfter;
+        });
+
+        setTomorrowAppointments(tomorrowAppts);
+
+        // Open the modal if there are any appointments tomorrow
+        if (tomorrowAppts.length > 0) {
+          setIsReminderOpen(true);
+        }
+        
       } catch (err) {
         console.error('Failed to fetch appointments:', err);
       } finally {
@@ -148,6 +174,14 @@ const closeDoctorModal = () => {
             doctorId={selectedDoctorId}
             onClose={closeDoctorModal}
             />
+        )}
+
+        {isReminderOpen && (
+          <AppointmentReminderModal
+            open={isReminderOpen}
+            onClose={() => setIsReminderOpen(false)}
+            appointments={tomorrowAppointments}
+          />
         )}
     </Box>
   );
