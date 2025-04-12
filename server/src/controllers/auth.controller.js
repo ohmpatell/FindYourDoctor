@@ -16,20 +16,19 @@ const generateToken = (id) => {
 const authMe = asyncHandler(async (req, res) => {
     const token = req.cookies.token;
     if (!token) {
-      return res.status(401).json({ message: 'Not authorized' });
+      return res.status(200).json({ message: 'Not authorized' });
     }
     try {
       const decoded = jwt.verify(token, JWT_SECRET);
-      // Try to find the user in any of your models
       let user = await User.findById(decoded.id) ||
                  await Clinic.findById(decoded.id) ||
                  await Doctor.findById(decoded.id);
       if (!user) {
-        return res.status(404).json({ message: 'User not found' });
+        return res.status(200).json({ message: 'User not found' });
       }
       res.json({ user });
     } catch (error) {
-      res.status(401).json({ message: 'Not authorized' });
+      res.status(200).json({ message: 'Not authorized here' });
     }
   });
   

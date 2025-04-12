@@ -110,9 +110,44 @@ const getSpecializations = asyncHandler(async (req, res) => {
   }
 })
 
+const getScheduleAppointments = asyncHandler(async (req, res) => {
+  const { doctorId, date } = req.body; 
+
+  if (!doctorId || !date) {
+    return res.status(400).json({ error: 'Missing required query parameters: doctorId and date.' });
+  }
+
+  if (isNaN(Date.parse(date))) {
+    return res.status(400).json({ error: 'Invalid date format. Please use YYYY-MM-DD.' });
+  }
+
+  const startDate = new Date(date);
+  startDate.setHours(0, 0, 0, 0);
+  const endDate = new Date(date);
+  endDate.setHours(23, 59, 59, 999);
+
+  const doctor = await Doctor.findById(doctorId).populate({
+    path: 'appointments',
+    match: { appointmentDate: { $gte: startDate, $lte: endDate } },
+    options: { sort: { appointmentDate: 1 } },
+    populate: [
+      { path: 'patient', select: 'firstName lastName email' },
+      { path: 'clinic', select: 'name address' },
+      { path: 'doctor', select: 'firstName lastName specialization' }
+    ]
+  });
+
+  if (!doctor) {
+    return res.status(404).json({ error: 'Doctor not found.' });
+  }
+
+  res.json(doctor.appointments);
+});
+
 module.exports = {
   getAllDoctors,
   getDoctorById,
   getDoctorAvailability,
-  getSpecializations
+  getSpecializations,
+  getScheduleAppointments
 };

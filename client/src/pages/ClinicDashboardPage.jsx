@@ -32,7 +32,12 @@ export default function ClinicDashboardPage() {
 
   const fetchAppointments = async () => {
     try {
-      const response = await api.get(`/clinic/appointments/today`);
+      const today = new Date();
+      const dateStr = today.toISOString().split('T')[0]; 
+      const response = await api.post(`/clinics/appointments/today`, {
+        clinicId: auth.user._id,
+        date: dateStr
+      });
       setAppointments(response.data);
     } catch (err) {
       console.error('Error fetching appointments:', err);

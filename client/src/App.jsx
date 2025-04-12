@@ -16,9 +16,9 @@ import UserHome from './pages/UserHome';
 import MyAppointmentsPage from './pages/MyAppointmentsPage';
 import ManageAppointmentsPage from './pages/ManageAppointmentsPage';
 import UserProfilePage from './pages/UserProfilePage';
-
-// Dummy components for demonstration
-const DoctorHome = () => <div>Doctor Home</div>;
+import DoctorDashboard from './pages/DoctorDashboard';
+import PatientDetailPage from './pages/PatientDetailPage';
+import DoctorSchedulePage from './pages/DoctorSchedulePage';
 
 const LayoutWithNavbar = () => (
   <>
@@ -56,10 +56,12 @@ function App() {
               <Route path="/user/home" element={<UserHome />} />
               <Route path="/user/profile" element={<UserProfilePage />} />
               <Route path="/clinic/home" element={<ClinicDashboardPage />} />
-              <Route path="/doctor/home" element={<DoctorHome />} />
+              <Route path="/doctor/home" element={<DoctorDashboard />} />
               <Route path="/clinic/appointments/:doctorId" element={<ManageAppointmentsPage />} />
               <Route path="/clinic/register-doctor" element={<DoctorRegisterPage />} />
               <Route path="/my-appointments" element={<MyAppointmentsPage />} />
+              <Route path="/patient/:patientId" element={<PatientDetailPage />} />
+              <Route path="/doctor/schedule" element={<DoctorSchedulePage />} />
             </Route>
           ) : (
             <Route path="*" element={<Navigate to="/login" replace />} />

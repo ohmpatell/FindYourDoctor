@@ -46,17 +46,14 @@ const MyAppointmentsPage = () => {
 
   const handleCloseDetail = () => {
     setIsAppointmentDetailOpen(false);
-    // Only refetch if needed (e.g., if status changed)
     if (selectedAppointment?.status !== appointments.find(a => a._id === selectedAppointment?._id)?.status) {
       fetchAppointments();
     }
   };
 
   const handleAppointmentUpdate = (updatedAppointment) => {
-    // Update the selected appointment (for modal re-renders)
     setSelectedAppointment(updatedAppointment);
     
-    // Update the appointments list
     setAppointments(prevAppointments =>
       prevAppointments.map(appointment =>
         appointment._id === updatedAppointment._id ? updatedAppointment : appointment
@@ -78,8 +75,9 @@ const MyAppointmentsPage = () => {
         {appointments.map((appointment) => {
           const past = isPastAppointment(appointment.appointmentDate);
           const cardStyles = past
-            ? { backgroundColor: '#f0f0f0', pointerEvents: 'none', opacity: 0.7 }
+            ? { backgroundColor: '#f0f0f0', opacity: 0.7, cursor: 'pointer' }
             : { cursor: 'pointer' };
+
 
           return (
             <Grid item xs={12} key={appointment._id} >
@@ -101,7 +99,7 @@ const MyAppointmentsPage = () => {
                   </Grid>
                   <Grid item xs={12}>
                     <Typography variant="body1">
-                      Specialty: {appointment.doctor?.specialty}
+                      {appointment.doctor?.specialization}
                     </Typography>
                   </Grid>
                   <Grid item xs={12}>
@@ -113,6 +111,21 @@ const MyAppointmentsPage = () => {
                     </Typography>
                     <Typography variant="body2" color="textSecondary">
                       Date & Time: {new Date(appointment.appointmentDate).toLocaleString()}
+                    </Typography>
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        color: appointment.status.toUpperCase() === 'CONFIRMED'
+                          ? 'green'
+                          : appointment.status.toUpperCase() === 'CANCELLED'
+                          ? 'red'
+                          : appointment.status.toUpperCase() === 'COMPLETED'
+                          ? 'grey'
+                          : 'black'
+                      }}
+                      textAlign={'right'}
+                    >
+                      {appointment.status.toUpperCase()}
                     </Typography>
                   </Grid>
                 </Grid>
