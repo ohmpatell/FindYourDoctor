@@ -5,10 +5,13 @@
     "scripts": {
         "client": "npm run dev --prefix client",
         "server": "npm start --prefix server",
-        "dev": "concurrently \"npm run server\" \"npm run client\""
+        "dev": "concurrently \"npm run server\" \"npm run client\"",
+        "test": "jest"
     },
     "devDependencies": {
-        "concurrently": "^7.6.0"
+        "concurrently": "^7.6.0",
+        "jest": "^29.7.0",
+        "supertest": "^7.1.0"
     },
     "dependencies": {
         "react-datepicker": "^8.1.0"
