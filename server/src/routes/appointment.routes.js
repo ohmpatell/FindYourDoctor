@@ -8,5 +8,6 @@ router.get('/', protect,appointmentController.getAllAppointments);
 router.get('/:id', protect,appointmentController.getAppointmentById);
 router.put('/:id', protect,appointmentController.editAppointment);
 router.delete('/:id', protect,appointmentController.deleteAppointment);
+router.get('/patient/:id', protect, appointmentController.getAllAppointmentsByPatientId);
 
 module.exports = router;

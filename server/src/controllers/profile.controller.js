@@ -1,56 +1,56 @@
 const User = require('../models/User');
-
-// GET /api/profile
-const getProfile = async (req, res) => {
-  // onle for user now, can add other role to view later
-  if (req.user.role !== 'USER') {
-    return res.status(403).json({ message: 'Access denied.' });
-  }
-
-  res.json({
-    firstName: req.user.firstName,
-    lastName: req.user.lastName,
-    email: req.user.email,
-    phoneNumber: req.user.phoneNumber,
-    profileImage: req.user.profileImage,
-    role: req.user.role,
-    createdAt: req.user.createdAt,
-  });
-};
+const Doctor = require('../models/Doctor');
+const Clinic = require('../models/Clinic');
+const asyncHandler = require('express-async-handler');
 
 // PUT /api/profile
-const updateProfile = async (req, res) => {
-  const updates = req.body;
+const updateProfile = asyncHandler(async (req, res) => {
+  const user = req.user; 
+  const updates = req.body; 
 
-  //check role
-  if (req.user.role !== 'USER') {
-    return res.status(403).json({ message: 'Access denied.' });
+  let updatedUser;
+  
+  if (user.role === 'DOCTOR') {
+    const doctorUpdates = {
+      firstName: updates.firstName,
+      lastName: updates.lastName,
+      profileImage: updates.profileImage,
+      specialization: updates.specialization,
+      credentials: updates.credentials,
+      bio: updates.bio,
+    };
+    updatedUser = await Doctor.findByIdAndUpdate(user._id, doctorUpdates, { new: true });
+  } else if (user.role === 'CLINIC') {
+    const clinicUpdates = {
+      name: updates.name,
+      phoneNumber: updates.phoneNumber,
+      profileImage: updates.profileImage,
+      address: updates.address, 
+      operatingHours: updates.operatingHours, 
+    };
+    updatedUser = await Clinic.findByIdAndUpdate(user._id, clinicUpdates, { new: true });
+  } else {
+    const userUpdates = {
+      firstName: updates.firstName,
+      lastName: updates.lastName,
+      phoneNumber: updates.phoneNumber,
+      gender: updates.gender,
+      dob: updates.dob,
+      address: updates.address,
+    };
+    updatedUser = await User.findByIdAndUpdate(user._id, userUpdates, { new: true });
   }
 
-  const allowedFields = ['firstName', 'lastName', 'phoneNumber', 'profileImage', 'gender', 'dob', 'address'];
-  const filteredUpdates = {};
-
-  allowedFields.forEach(field => {
-    if (updates[field] !== undefined) {
-      if (field === 'dob') {
-        filteredUpdates[field] = new Date(updates[field]);
-      }
-      filteredUpdates[field] = updates[field];
-    }
-  });
-
-  const updatedUser = await User.findByIdAndUpdate(
-    req.user._id,
-    { $set: filteredUpdates },
-    { new: true }
-  );
-
-  res.json({
-    message: 'Profile updated successfully',
-  });
-};
+  if (updatedUser) {
+    res.status(200).json({
+      message: 'Profile updated successfully',
+      user: updatedUser,
+    });
+  } else {
+    res.status(404).json({ message: 'User not found' });
+  }
+});
 
 module.exports = {
-  getProfile,
   updateProfile
 };

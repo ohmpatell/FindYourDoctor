@@ -6,7 +6,6 @@ const asyncHandler = require('express-async-handler');
 
 const createAppointment = asyncHandler(async (req, res) => {
     const { patientId, doctorId, appointmentDate, patientConcerns } = req.body;
-    console.log(req.body);
     
     const doctor = await Doctor.findById(doctorId);
     if (!doctor) return res.status(400).json({ message: 'Doctor not found' });
@@ -53,7 +52,7 @@ const createAppointment = asyncHandler(async (req, res) => {
  */
 const getAllAppointments = asyncHandler(async (req, res) => {
     try {
-      const user = req.user; // Assuming your auth middleware attaches the user
+      const user = req.user; 
       let appointments;
   
       if (user.role === 'USER') {
@@ -66,6 +65,25 @@ const getAllAppointments = asyncHandler(async (req, res) => {
         appointments = await Appointment.find({});
       }
   
+      const today = new Date();
+      appointments = appointments.map(appointment => {
+        const appointmentDate = new Date(appointment.appointmentDate);
+        if (appointmentDate < today) {
+          appointment.status = 'completed';
+        }
+        return appointment;
+      });
+
+      res.json(appointments);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  const getAllAppointmentsByPatientId = asyncHandler(async (req, res) => {
+    try {
+      const patientId = req.params.id;
+      const appointments = await Appointment.find({ patient: patientId }).populate('patient doctor clinic');
       res.json(appointments);
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -129,5 +147,6 @@ module.exports = {
     getAllAppointments,
     getAppointmentById,
     editAppointment,
-    deleteAppointment
+    deleteAppointment,
+    getAllAppointmentsByPatientId
 }

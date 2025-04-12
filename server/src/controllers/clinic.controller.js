@@ -1,6 +1,7 @@
 const Clinic = require('../models/Clinic');
 const asyncHandler = require('express-async-handler');
 const Doctor = require('../models/Doctor');
+const Appointment = require('../models/Appointment');
 
 
 const getProvinces = asyncHandler(async (req,res)=> {
@@ -27,7 +28,37 @@ const getDoctors = asyncHandler(async (req,res)=> {
   }
 });
 
+const getTodaysAppointments = asyncHandler(async (req, res) => {
+  const { clinicId, date } = req.body;
+  if (!clinicId || !date) {
+    res.status(400).json({ error: 'Missing required query parameters: clinicId and date.' });
+    return;
+  }
+
+  const clinic = await Clinic.findById(clinicId);
+  if (!clinic) {
+    res.status(404).json({ error: 'Clinic not found.' });
+    return;
+  }
+
+
+  if (isNaN(Date.parse(date))) {
+    res.status(400).json({ error: 'Invalid date format. Please use YYYY-MM-DD.' });
+    return;
+  }
+
+  const appointments = await Appointment.find({
+    clinic: clinicId,
+    appointmentDate: new Date(date),
+  })
+    .populate('patient clinic doctor')
+    .sort({ appointmentDate: 1 });
+
+  res.json(appointments);
+});
+
 module.exports = {
   getProvinces,
-  getDoctors
+  getDoctors,
+  getTodaysAppointments,
 }
