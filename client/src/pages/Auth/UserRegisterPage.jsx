@@ -30,6 +30,7 @@ function UserRegisterPage() {
   const [activeStep, setActiveStep] = useState(0);
   const [pfp, setPfp] = useState(null);
   const [image, setImage] = useState(null);
+  const [error, setError] = useState(null);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -98,6 +99,8 @@ function UserRegisterPage() {
         navigate('/user/home');
       } catch (err) {
         console.error(err);
+        const errorMessage = err.response.data.message;
+        setError(errorMessage.toString());
       }
     } else {
       setActiveStep(prev => prev + 1);
@@ -245,6 +248,12 @@ function UserRegisterPage() {
               {errors.terms && (
                 <Typography variant="caption" color="error">
                   {errors.terms}
+                </Typography>
+              )}
+
+              {error && (
+                <Typography variant="caption" color="error">
+                  {error}
                 </Typography>
               )}
             </>

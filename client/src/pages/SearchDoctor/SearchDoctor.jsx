@@ -49,7 +49,6 @@ function SearchDoctorPage() {
     const fetchDoctors = async () => {
       try {
         const response = await api.get('/doctors/'); // Replace with your backend URL
-        // console.log(response.data);
         setDoctorsData(response.data);
         setFilteredDoctors(response.data); // Initialize filteredDoctors with all doctors
       } catch (error) {

@@ -40,7 +40,7 @@ function App() {
 
         <Routes>
           {/* Public Routes */}
-          <Route path="/login" element={auth.isAuthenticated ? <Navigate to={`/${auth.user.role.toLowerCase()}/home`} replace /> : <LoginPage />} />
+          <Route path="/login" element={auth.user ? <Navigate to={`/${auth.user.role.toLowerCase()}/home`} replace /> : <LoginPage />} />
           <Route path="/register/user" element={<UserRegisterPage />} />
           <Route path="/register/clinic" element={<ClinicRegisterPage />} />
           <Route path="/register/doctor" element={<DoctorRegisterPage />} />
@@ -50,7 +50,7 @@ function App() {
           </Route>
         
           {/* Protected Routes */}
-          {auth.isAuthenticated ? (
+          {auth.isAuthenticated && auth.user ? (
             <Route element={<LayoutWithNavbar />}>
               <Route path="/" element={<Navigate to={`/${auth.user.role.toLowerCase()}/home`} replace />} />
               <Route path="/user/home" element={<UserHome />} />

@@ -30,14 +30,21 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await api.get('/auth/me');
       const { user } = response.data;
-      setAuth({
-        isAuthenticated: true,
-        user,
-        loading: false,
-      });
 
       if (user) {
-        navigate(`/${user.role.toLowerCase()}/home`); // Redirect based on user role
+        navigate(`/${user.role.toLowerCase()}/home`); 
+        setAuth({
+          isAuthenticated: true,
+          user,
+          loading: false,
+        });
+      }
+      else {
+        setAuth({
+          isAuthenticated: false,
+          user: null,
+          loading: false,
+        });
       }
 
     } catch (error) {
@@ -93,7 +100,6 @@ export const AuthProvider = ({ children }) => {
       { firstName, lastName, email, password, phoneNumber, profileImage }
     );
     await fetchUser();
-    return response.data;
   };
 
   /**
